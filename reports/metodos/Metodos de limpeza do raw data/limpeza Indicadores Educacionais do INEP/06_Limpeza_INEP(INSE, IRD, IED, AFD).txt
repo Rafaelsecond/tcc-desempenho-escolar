@@ -1,0 +1,50 @@
+Passo 2.5: Mapear as colunas técnicas do IED para Ensino Médio
+
+Vamos ver quais são os códigos das colunas técnicas do IED (da Linha 10) para sabermos quais representam o Ensino Médio.
+
+Crie o arquivo pipelines/02_Indicadores_Educacionais_do_INEP/05_inspecionar_colunas_ied.py:
+
+Código:
+
+from pathlib import Path
+import pandas as pd
+
+pasta_inep = Path(
+    r"D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar\data\raw\2. INEP — Indicadores Educacionais (Fatores Docentes e Socioeconômicos)"
+)
+
+arq_ied = (
+    pasta_inep
+    / "B. Esforço Docente (IED)"
+    / "2023 IED"
+    / "IED_2023_ESCOLAS"
+    / "IED_ESCOLAS_2023.xlsx"
+)
+
+# Lemos com header=10 e apenas 5 linhas
+df_ied = pd.read_excel(arq_ied, header=10, nrows=5)
+
+print(f"Total de colunas no IED: {len(df_ied.columns)}")
+print("\nLista de todas as colunas técnicas do IED:")
+for col in df_ied.columns:
+    print(f" - {col}")
+
+
+Resultado esperado:
+
+As colunas do Ensino Médio estão perfeitamente identificadas no IED:
+
+	* MED_CAT_1 até MED_CAT_6: indicam a porcentagem (%) de professores da escola em cada um dos 6 níveis de esforço (onde Nível 1 é esforço leve e Níveis 5 e 6 indicam alta sobrecarga de alunos, escolas e turnos).
+
+
+Podemos criar duas variáveis muito ricas para o seu modelo de Machine Learning a partir disso:
+
+	1 IED_SCORE_MEDIO: a média ponderada do esforço docente da escola (uma nota contínua de 1.0 a 6.0):
+		IED_SCORE_MEDIO= 1⋅C1+2⋅C2+3⋅C3+4⋅C4+5⋅C5+6⋅C6/100
+
+	2 IED_ESFORCO_ALTO: a soma dos Níveis 5 e 6 (C5+C6C5+C6), representando a porcentagem de professores sob sobrecarga severa na escola.
+
+	
+​
+ 
+​

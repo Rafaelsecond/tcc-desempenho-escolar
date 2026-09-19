@@ -1,0 +1,61 @@
+Passo 2.2": Inspecionar as primeiras linhas do INSE e do IRD
+
+
+
+Criar o arquivo pipelines/02_Indicadores_Educacionais_do_INEP/02_inspecionar_cabecalho_inse_ird.py
+
+
+Um script rápido para ler apenas as primeiras 15 linhas de INSE e de IRD para descobrir:
+
+	1 Em qual linha começam os nomes das colunas de verdade?
+
+	2 Qual é o nome exato da coluna do código da escola (CO_ENTIDADE)?
+
+	3 Quais são os nomes das colunas que trazem os valores do indicador?
+
+
+script:
+
+
+from pathlib import Path
+import pandas as pd
+
+pasta_inep = Path(
+    r"D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar\data\raw\2. INEP — Indicadores Educacionais (Fatores Docentes e Socioeconômicos)"
+)
+
+# Caminhos dos arquivos de 2023
+arq_inse = pasta_inep / "D. Nível Socioeconômico (INSE)" / "INSE_2023" / "INSE_2023_escolas.xlsx"
+arq_ird = (
+    pasta_inep
+    / "A. Regularidade do Corpo Docente (IRD)"
+    / "2023 Regularidade do Corpo Docente"
+    / "IRD_2023_ESCOLAS"
+    / "IRD_ESCOLAS_2023.xlsx"
+)
+
+print("==================================================")
+print("1. INSPECIONANDO CABEÇALHO DO INSE 2023")
+print("==================================================")
+# Lemos as primeiras 12 linhas sem definir header para ver onde ele começa
+df_inse_raw = pd.read_excel(arq_inse, nrows=12, header=None)
+for idx, row in df_inse_raw.iterrows():
+    # Exibe os primeiros 6 valores não nulos de cada linha
+    valores = [str(v) for v in row.values if pd.notna(v)][:6]
+    print(f"Linha {idx}: {valores}")
+
+print("\n==================================================")
+print("2. INSPECIONANDO CABEÇALHO DO IRD 2023")
+print("==================================================")
+df_ird_raw = pd.read_excel(arq_ird, nrows=12, header=None)
+for idx, row in df_ird_raw.iterrows():
+    valores = [str(v) for v in row.values if pd.notna(v)][:6]
+    print(f"Linha {idx}: {valores}")
+
+
+
+resultado esperado:
+
+1 INSE 2023: É direto ao ponto! O cabeçalho começa na Linha 0 (header=0), e os dados já começam na Linha 1.
+
+2 IRD 2023: Segue o padrão clássico do INEP: as primeiras 9 linhas são títulos e notas de rodapé, e na Linha 10 temos o cabeçalho técnico padronizado com CO_ENTIDADE.

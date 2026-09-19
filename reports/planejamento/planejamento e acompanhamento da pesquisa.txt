@@ -1,0 +1,105 @@
+"Os dados utilizados nesta pesquisa foram coletados a partir de repositórios governamentais abertos, em estrita observância à Lei de Acesso à Informação (Lei nº 12.527/2011). Os microdados de proficiência do SARESP foram obtidos no Portal de Dados Abertos da SEDUC-SP (dados.educacao.sp.gov.br), enquanto os indicadores de Regularidade Docente (IRD), Esforço Docente (IED), Adequação Formativa e Nível Socioeconômico (INSE), juntamente com os atributos de infraestrutura do Censo Escolar, foram extraídos do Portal de Dados Abertos do INEP (gov.br/inep). Para assegurar a integridade do relacionamento entre os registros estaduais e federais, utilizou-se a base de Escolas Ativas da SEDUC-SP como tabela de de-para entre o código CIE e o código INEP (CO_ENTIDADE)."
+
+
+
+                                  Passo 1: Fontes de dados e ingestão:
+
+      ┌──────────────────────────────┼───────────────────────────────┐
+      ▼                                         ▼                                          ▼
+
+    1. SEDUC-SP                            2. INEP INDICADORES                   3. INEP CENSO ESCOLAR
+   (dados.educacao.sp.gov.br)               (gov.br/inep)                              (gov.br/inep)
+
+  • SARESP 2022, 2023, 2024              • IRD (Regularidade Docente)           • Microdados Censo Escolar
+  • 3ª série Ensino Médio                • IED (Esforço Docente)                • Tabela Escolas (SP Estadual)
+  • % Abaixo do Básico (Target Y)        • Adequação Formação Docente           • Infraestrutura (Labs, Internet)
+  • Primary Key: CD_ESCOLA               • INSE (Nível Socioeconômico)          • Primary Key: CO_ENTIDADE
+                                         • Primary Key: CO_ENTIDADE
+
+
+                                  
+
+                                 Passo 2: ETL (extrair, transformar e carregar)
+
+
+[Raw Files on HD]
+       │
+       ▼
+ 1. DATA PROFILING       Inspect encodings, delimiters, and header row offsets (skiprows)
+       │
+       ▼
+ 2. SCOPE FILTERING      Filter to SP State High Schools (SG_UF == 'SP', TP_DEPENDENCIA == 2)
+       │
+       ▼
+ 3. KEY STANDARDIZATION  Cast CO_ENTIDADE & CD_ESCOLA as clean strings; link via Escolas Ativas
+       │
+       ▼
+ [Ready for Relational Merge]
+
+
+"Optou-se deliberadamente pelo recorte dos concluintes da 3ª série do Ensino Médio por representar o desfecho cumulativo da etapa e mitigar fatores de confusão decorrentes do Ensino Fundamental presentes nas séries iniciais, além de assegurar a comparabilidade censitária contínua ao longo de todo o triênio 2022–2024."
+
+
+Observações:
+
+
+Ponto 1: Incompatibilidade Conceitual (SARESP 2022 vs. Provão Paulista 2023/2024)
+
+Os dados reais confirmam essa quebra estrutural:
+ * 2022 (SARESP Diagnóstico): Média estadual de acertos = 40,46% (desvio: 6,4%).
+ * 2023 (Provão Paulista - Vestibular Seriado): Média estadual de acertos = 26,05% (desvio: 3,3%).
+ * 2024 (Provão Paulista - Vestibular Seriado): Média estadual de acertos = 28,53% (desvio: 4,9%).
+
+Houve uma queda abrupta de mais de 14 pontos percentuais na média de acertos devido à complexidade das questões do vestibular seriado.
+Solução Implementada (Z-Score Anual)
+
+Calculamos para cada escola o escore padronizado em relação à rede no ano $t$: $$Z_{i, t} = \frac{X_{i, t} - \mu_t}{\sigma_t}$$ Um $Z = 0$ representa a média exata do estado em qualquer ano, e $Z = +1,0$ indica desempenho um desvio-padrão acima da rede, neutralizando a diferença de dificuldade entre os instrumentos.
+
+
+Ponto 2: Média Ponderada por Número de Alunos
+
+Em dados educacionais agregados por escola, a média ponderada pelo volume de alunos avaliados em cada ano (TOTAL_ALUNOS_TRIENIO) reconstrói a coorte real de concluintes do triênio, evitando que anos com 2 ou 3 alunos tenham o mesmo peso de anos com 150 alunos.
+
+Solução Implementada:
+
+df_target['TARGET_MEDIA_ACERTOS_MAT_POND'] = (
+    (df_target['MEDIA_ACERTOS_2022'].fillna(0) * df_target['QTD_ALUNOS_2022'].fillna(0)) +
+    (df_target['MEDIA_ACERTOS_2023'].fillna(0) * df_target['QTD_ALUNOS_2023'].fillna(0)) +
+    (df_target['MEDIA_ACERTOS_2024'].fillna(0) * df_target['QTD_ALUNOS_2024'].fillna(0))
+) / df_target['TOTAL_ALUNOS_TRIENIO'].replace(0, np.nan)
+
+
+Ponto 3: Viés de Participação Parcial e ANOS_COM_DADOS
+Diagnóstico da Base:
+
+3 anos de dados: 3.550 escolas (95,25% da rede).
+2 anos de dados: 104 escolas (2,79%).
+1 ano de dados: 48 escolas (1,29%).
+0 anos: 25 escolas (0,67%).
+
+Criamos a coluna ANOS_COM_DADOS. Para a modelagem, filtramos apenas escolas com pelo menos 2 anos de histórico ($\ge 2$), o que elimina o risco de avaliar uma escola por um único ano atípico.
+
+
+Ponto 4: Micro-Turmas ($N < 10$) e Unidades Especiais (Penitenciárias e Fundação CASA)
+Diagnóstico da Base:
+112 escolas possuíam menos de 10 alunos avaliados no triênio inteiro (menos de 3 alunos por ano).
+Dessas, 92 escolas são exatamente unidades de centros de detenção provisória (CDPs), penitenciárias (ex: Cerqueira César, Irapuru, Franco da Rocha) e turmas especiais vinculadas.
+Essas unidades não possuem INSE calculado pelo INEP, nem laboratórios de informática convencionais ou salas regulares.
+Seguir o critério do INEP/SAEB (suprimir unidades com $N < 10$) protege os modelos de Machine Learning (como Ridge, Random Forest e XGBoost) contra outliers de alta alavancagem com ruído estatístico extremo.
+
+
+Ponto 5: Simetria no Filtro de Ausentes em 2022
+Aplicamos o filtro sugerido:
+
+df22_em = df22_em[df22_em['porc_acerto_mat'].notna()]
+
+
+Garantindo que alunos com presença registrada mas sem nota válida não distorçam o denominador.
+
+
+Análise da Perda Amostral: Vale a pena excluir linhas incompletas?
+Sim, vale totalmente a pena. A porcentagem de descarte é muito baixa (apenas 3,84%).
+
+
+Como a perda é de apenas 3,84% e elimina quase exclusivamente unidades prisionais sem INSE e micro-turmas com ruído amostral, a exclusão dessas linhas incompletas é a prática mais recomendada na literatura científica e de Ciência de Dados, dispensando técnicas artificiais de imputação.
+

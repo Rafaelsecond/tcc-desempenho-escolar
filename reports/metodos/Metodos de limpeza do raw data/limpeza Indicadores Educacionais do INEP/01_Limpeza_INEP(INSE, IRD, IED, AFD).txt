@@ -1,0 +1,123 @@
+Agora que temos a nossa espinha dorsal cadastral (01_escolas_base.parquet), o Passo 2 tem como objetivo preparar os fatores socioeconômicos e docentes das escolas:
+
+	* INSE: Nível Socioeconômico dos alunos da escola (o preditor mais forte na literatura educacional).
+
+	* IRD: Regularidade do Corpo Docente (aquele indicador que estava bugado na base antiga, com notas na escala de 1 a 5).
+	* IED: Esforço Docente.
+
+	* AFD: Adequação da Formação Docente (professores lecionando na sua área de formação).
+
+
+
+
+			Passo 2.1": Inspecionar as pastas dos Indicadores INEP:
+
+
+Antes de escrever qualquer código de junção, vamos listar exatamente os arquivos presentes nas 4 pastas de indicadores do INEP para entender seus nomes, anos e extensões (CSV, Excel, ODS).
+
+Criado o arquivo pipelines/02_inspecionar_indicadores_inep.py
+
+
+
+from pathlib import Path
+
+pasta_inep = Path(
+    r"D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar\data\raw\2. INEP — Indicadores Educacionais (Fatores Docentes e Socioeconômicos)"
+)
+
+print(f"Buscando arquivos recursivamente em:\n{pasta_inep}\n")
+
+subpastas = [p for p in pasta_inep.iterdir() if p.is_dir()]
+
+extensoes_validas = {".csv", ".xlsx", ".ods", ".zip"}
+
+for sub in sorted(subpastas):
+    print(f"==================================================")
+    print(f"📁 {sub.name}")
+    print(f"==================================================")
+
+    # rglob busca em todas as subpastas dentro desta pasta
+    arquivos = [
+        f
+        for f in sub.rglob("*")
+        if f.is_file() and f.suffix.lower() in extensoes_validas
+    ]
+
+    if not arquivos:
+        print("   (Nenhum arquivo de dados encontrado nesta pasta)")
+    else:
+        for arq in sorted(arquivos):
+            tamanho_mb = arq.stat().st_size / (1024 * 1024)
+            # Mostra o caminho relativo a partir da pasta do indicador
+            rel_path = arq.relative_to(sub)
+            print(f"   └── 📄 {rel_path} ({tamanho_mb:.2f} MB)")
+    print()
+
+
+
+
+
+					Resultado esperado do código:
+
+
+
+
+Buscando arquivos recursivamente em:
+D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar\data\raw\2. INEP — Indicadores Educacionais (Fatores Docentes e Socioeconômicos)
+
+==================================================
+📁 A. Regularidade do Corpo Docente (IRD)
+==================================================
+   └── 📄 2022 Regularidade do Corpo Docente\IRD_2022_ESCOLAS\IRD_ESCOLAS_2022.ods (9.23 MB)
+   └── 📄 2022 Regularidade do Corpo Docente\IRD_2022_ESCOLAS\IRD_ESCOLAS_2022.xlsx (10.89 MB)
+   └── 📄 2023 Regularidade do Corpo Docente\IRD_2023_ESCOLAS\IRD_ESCOLAS_2023.ods (9.24 MB)
+   └── 📄 2023 Regularidade do Corpo Docente\IRD_2023_ESCOLAS\IRD_ESCOLAS_2023.xlsx (10.85 MB)
+   └── 📄 2024 Regularidade do Corpo Docente\IRD_2024_ESCOLAS\IRD_ESCOLAS_2024.ods (9.25 MB)
+   └── 📄 2024 Regularidade do Corpo Docente\IRD_2024_ESCOLAS\IRD_ESCOLAS_2024.xlsx (10.85 MB)
+
+==================================================
+📁 B. Esforço Docente (IED)
+==================================================
+   └── 📄 2022 IED\IED_2022_BRASIL_REGIOES_UFS\IED_BRASIL_REGIOES_UFS_2022.ods (0.10 MB)
+   └── 📄 2022 IED\IED_2022_BRASIL_REGIOES_UFS\IED_BRASIL_REGIOES_UFS_2022.xlsx (0.11 MB)
+   └── 📄 2022 IED\IED_2022_ESCOLAS\IED_ESCOLAS_2022.ods (17.67 MB)
+   └── 📄 2022 IED\IED_2022_ESCOLAS\IED_ESCOLAS_2022.xlsx (21.11 MB)
+   └── 📄 2022 IED\IED_2022_MUNICIPIOS\IED_MUNICIPIOS_2022.ods (8.15 MB)
+   └── 📄 2022 IED\IED_2022_MUNICIPIOS\IED_MUNICIPIOS_2022.xlsx (9.77 MB)
+   └── 📄 2023 IED\IED_2023_BRASIL_REGIOES_UFS\IED_BRASIL_REGIOES_UFS_2023.ods (0.10 MB)
+   └── 📄 2023 IED\IED_2023_BRASIL_REGIOES_UFS\IED_BRASIL_REGIOES_UFS_2023.xlsx (0.11 MB)
+   └── 📄 2023 IED\IED_2023_ESCOLAS\IED_ESCOLAS_2023.ods (17.60 MB)
+   └── 📄 2023 IED\IED_2023_ESCOLAS\IED_ESCOLAS_2023.xlsx (20.96 MB)
+   └── 📄 2023 IED\IED_2023_MUNICIPIOS\IED_MUNICIPIOS_2023.ods (8.13 MB)
+   └── 📄 2023 IED\IED_2023_MUNICIPIOS\IED_MUNICIPIOS_2023.xlsx (9.77 MB)
+   └── 📄 2024 IED\IED_2024_BRASIL_REGIOES_UFS\IED_BRASIL_REGIOES_UFS_2024.ods (0.10 MB)
+   └── 📄 2024 IED\IED_2024_BRASIL_REGIOES_UFS\IED_BRASIL_REGIOES_UFS_2024.xlsx (0.11 MB)
+   └── 📄 2024 IED\IED_2024_ESCOLAS\IED_ESCOLAS_2024.ods (17.59 MB)
+   └── 📄 2024 IED\IED_2024_ESCOLAS\IED_ESCOLAS_2024.xlsx (20.93 MB)
+   └── 📄 2024 IED\IED_2024_MUNICIPIOS\IED_MUNICIPIOS_2024.ods (8.10 MB)
+   └── 📄 2024 IED\IED_2024_MUNICIPIOS\IED_MUNICIPIOS_2024.xlsx (9.75 MB)
+
+==================================================
+📁 C. Adequação da Formação Docente
+==================================================
+   └── 📄 2022 Adequação da Formação Docente\AFD_2022_ESCOLAS\AFD_ESCOLAS_2022.ods (25.85 MB)
+   └── 📄 2022 Adequação da Formação Docente\AFD_2022_ESCOLAS\AFD_ESCOLAS_2022.xlsx (34.62 MB)
+   └── 📄 2022 Adequação da Formação Docente\AFD_2022_MUNICIPIOS\AFD_MUNICIPIOS_2022.ods (10.06 MB)
+   └── 📄 2022 Adequação da Formação Docente\AFD_2022_MUNICIPIOS\AFD_MUNICIPIOS_2022.xlsx (12.71 MB)
+   └── 📄 2023 Adequação da Formação Docente\AFD_2023_ESCOLAS\AFD_ESCOLAS_2023_v1.1.ods (25.81 MB)
+   └── 📄 2023 Adequação da Formação Docente\AFD_2023_ESCOLAS\AFD_ESCOLAS_2023_v1.1.xlsx (34.65 MB)
+   └── 📄 2023 Adequação da Formação Docente\AFD_2023_MUNICIPIOS\AFD_MUNICIPIOS_2023.ods (10.02 MB)
+   └── 📄 2023 Adequação da Formação Docente\AFD_2023_MUNICIPIOS\AFD_MUNICIPIOS_2023.xlsx (12.70 MB)
+   └── 📄 2024 Adequação da Formação Docente\AFD_2024_ESCOLAS\AFD_ESCOLAS_2024.ods (25.87 MB)
+   └── 📄 2024 Adequação da Formação Docente\AFD_2024_ESCOLAS\AFD_ESCOLAS_2024.xlsx (34.79 MB)
+   └── 📄 2024 Adequação da Formação Docente\AFD_2024_MUNICIPIOS\AFD_MUNICIPIOS_2024.ods (9.97 MB)
+   └── 📄 2024 Adequação da Formação Docente\AFD_2024_MUNICIPIOS\AFD_MUNICIPIOS_2024.xlsx (12.67 MB)
+
+==================================================
+📁 D. Nível Socioeconômico (INSE)
+==================================================
+   └── 📄 INSE_2023\INSE_2023_brasil.xlsx (0.01 MB)
+   └── 📄 INSE_2023\INSE_2023_escolas.xlsx (8.38 MB)
+   └── 📄 INSE_2023\INSE_2023_estados.xlsx (0.15 MB)
+   └── 📄 INSE_2023\INSE_2023_municipios.xlsx (10.95 MB)
+

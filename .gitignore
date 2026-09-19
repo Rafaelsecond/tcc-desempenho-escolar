@@ -1,0 +1,51 @@
+# ==============================================================================
+# Git Ignore - Projeto TCC Desempenho Escolar
+# ==============================================================================
+
+# Dados (arquivos volumosos do INEP e parquet - não subir para o GitHub)
+data/raw/*
+!data/raw/.gitkeep
+data/silver/*
+!data/silver/.gitkeep
+data/gold/*
+!data/gold/.gitkeep
+
+# Arquivos de dados gerais
+*.parquet
+*.csv
+*.xlsx
+*.xls
+*.zip
+*.rar
+*.7z
+*.tar.gz
+
+# Ambientes virtuais Python
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Caches e bytecode Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# Configurações de IDEs e editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs e arquivos de sistema
+*.log
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store

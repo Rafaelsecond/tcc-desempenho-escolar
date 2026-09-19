@@ -1,0 +1,37 @@
+"Os dados utilizados nesta pesquisa foram coletados a partir de repositórios governamentais abertos, em estrita observância à Lei de Acesso à Informação (Lei nº 12.527/2011). Os microdados de proficiência do SARESP foram obtidos no Portal de Dados Abertos da SEDUC-SP (dados.educacao.sp.gov.br), enquanto os indicadores de Regularidade Docente (IRD), Esforço Docente (IED), Adequação Formativa e Nível Socioeconômico (INSE), juntamente com os atributos de infraestrutura do Censo Escolar, foram extraídos do Portal de Dados Abertos do INEP (gov.br/inep). Para assegurar a integridade do relacionamento entre os registros estaduais e federais, utilizou-se a base de Escolas Ativas da SEDUC-SP como tabela de de-para entre o código CIE e o código INEP (CO_ENTIDADE)."
+
+
+
+                                  Passo 1: Fontes de dados e ingestão:
+
+      ┌──────────────────────────────┼───────────────────────────────┐
+      ▼                                         ▼                                          ▼
+
+    1. SEDUC-SP                            2. INEP INDICADORES                   3. INEP CENSO ESCOLAR
+   (dados.educacao.sp.gov.br)               (gov.br/inep)                              (gov.br/inep)
+
+  • SARESP 2022, 2023, 2024              • IRD (Regularidade Docente)           • Microdados Censo Escolar
+  • 3ª série Ensino Médio                • IED (Esforço Docente)                • Tabela Escolas (SP Estadual)
+  • % Abaixo do Básico (Target Y)        • Adequação Formação Docente           • Infraestrutura (Labs, Internet)
+  • Primary Key: CD_ESCOLA               • INSE (Nível Socioeconômico)          • Primary Key: CO_ENTIDADE
+                                         • Primary Key: CO_ENTIDADE
+
+
+                                  
+
+                                 Passo 2: ETL (extrair, transformar e carregar)
+
+
+[Raw Files on HD]
+       │
+       ▼
+ 1. DATA PROFILING       Inspect encodings, delimiters, and header row offsets (skiprows)
+       │
+       ▼
+ 2. SCOPE FILTERING      Filter to SP State High Schools (SG_UF == 'SP', TP_DEPENDENCIA == 2)
+       │
+       ▼
+ 3. KEY STANDARDIZATION  Cast CO_ENTIDADE & CD_ESCOLA as clean strings; link via Escolas Ativas
+       │
+       ▼
+ [Ready for Relational Merge]

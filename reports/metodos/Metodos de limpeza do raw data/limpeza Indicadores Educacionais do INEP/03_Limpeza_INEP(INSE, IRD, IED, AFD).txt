@@ -1,0 +1,98 @@
+Passo 2.3": Identificar as colunas de métricas e como os números aparecem
+
+
+Agora precisamos ver a lista completa de colunas de cada um desses dois arquivos e inspecionar uma amostra de escolas de São Paulo (SG_UF == 'SP') para:
+
+
+	1 Ver quais são as colunas com a nota do INSE e sua classificação (ex: MEDIA_INSE, INSE_CLASSIFICACAO);
+
+	2 Ver quais são as colunas do IRD (especialmente se há uma coluna específica para o Ensino Médio ou se é a média geral);
+
+	3 Ver se os números vêm como float ou texto com vírgula (para evitarmos aquele bug de bilhões que vimos na base antiga!).
+
+
+
+Criar o arquivo pipelines/02_Indicadores_Educacionais_do_INEP/02_inspecionar_colunas_detalhadas.py:
+
+from pathlib import Path
+import pandas as pd
+
+pasta_inep = Path(
+    r"D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar\data\raw\2. INEP — Indicadores Educacionais (Fatores Docentes e Socioeconômicos)"
+)
+
+arq_inse = (
+    pasta_inep
+    / "D. Nível Socioeconômico (INSE)"
+    / "INSE_2023"
+    / "INSE_2023_escolas.xlsx"
+)
+arq_ird = (
+    pasta_inep
+    / "A. Regularidade do Corpo Docente (IRD)"
+    / "2023 Regularidade do Corpo Docente"
+    / "IRD_2023_ESCOLAS"
+    / "IRD_ESCOLAS_2023.xlsx"
+)
+
+# -------------------------------------------------------------------------
+# 1. DETALHANDO INSE 2023
+# -------------------------------------------------------------------------
+print("==================================================")
+print("1. COLUNAS E AMOSTRA DO INSE 2023 (header=0)")
+print("==================================================")
+df_inse = pd.read_excel(arq_inse, header=0, nrows=100)
+
+print(f"Total de colunas no INSE: {len(df_inse.columns)}")
+print("Lista de colunas:")
+for col in df_inse.columns:
+    print(f" - {col}")
+
+# Filtra uma amostra de SP para vermos os valores reais
+df_inse_sp = df_inse[df_inse["SG_UF"] == "SP"]
+if not df_inse_sp.empty:
+    print("\nExemplo de linha de SP no INSE:")
+    print(df_inse_sp.iloc[0].to_dict())
+else:
+    print("\nPrimeira linha geral (RO):")
+    print(df_inse.iloc[0].to_dict())
+
+# -------------------------------------------------------------------------
+# 2. DETALHANDO IRD 2023
+# -------------------------------------------------------------------------
+print("\n==================================================")
+print("2. COLUNAS E AMOSTRA DO IRD 2023 (header=10)")
+print("==================================================")
+df_ird = pd.read_excel(arq_ird, header=10, nrows=100)
+
+print(f"Total de colunas no IRD: {len(df_ird.columns)}")
+print("Lista de colunas:")
+for col in df_ird.columns:
+    print(f" - {col}")
+
+df_ird_sp = df_ird[df_ird["SG_UF"] == "SP"]
+if not df_ird_sp.empty:
+    print("\nExemplo de linha de SP no IRD:")
+    print(df_ird_sp.iloc[0].to_dict())
+else:
+    print("\nPrimeira linha geral (RO):")
+    print(df_ird.iloc[0].to_dict())
+
+
+resultado esperado da analise:
+
+1 Sobre o INSE 2023:
+
+	* A coluna de código da escola chama-se ID_ESCOLA (basta aplicar .astype(str).str.zfill(8) para renomear para CO_ENTIDADE e casar perfeitamente com a nossa base de escolas).
+
+	* A nota do INSE já vem como número decimal limpo (MEDIA_INSE = 4.29) e sua faixa categórica (INSE_CLASSIFICACAO = 'Nível III').
+
+	* Também temos a distribuição percentual dos alunos por faixas (PC_NIVEL_1 até PC_NIVEL_8), caso queira no futuro.
+
+2 Sobre o IRD 2023:
+
+	* A chave já se chama diretamente CO_ENTIDADE.
+
+	* A nota média de regularidade docente da escola está na coluna EDU_BAS_CAT_0 (que varia de 1.0 a 5.0). Veja que na amostra ela veio limpa como 5.0, em formato numérico decimal real!
+
+	* Aquele erro de trilhões (2.739.558.666...) que vimos no arquivo antigo foi completamente superado ao ler o arquivo oficial diretamente com o pandas.

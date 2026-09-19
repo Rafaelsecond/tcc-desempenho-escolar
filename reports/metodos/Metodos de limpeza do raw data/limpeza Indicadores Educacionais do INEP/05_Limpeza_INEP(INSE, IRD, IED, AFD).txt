@@ -1,0 +1,40 @@
+Passo 2.4: Inspecionar o IED (Esforço Docente)
+
+O IED mede a sobrecarga de trabalho do professor (quantos alunos ele atende, quantas escolas leciona e quantos turnos trabalha), o que é uma variável riquíssima.
+
+Vamos inspecionar rapidamente o arquivo de 2023 do IED (IED_ESCOLAS_2023.xlsx) para ver em qual linha começa o cabeçalho e quais colunas ele tem.
+
+Crie o arquivo pipelines/02_Indicadores_Educacionais_do_INEP/04_inspecionar_ied.py:
+
+
+código:
+
+from pathlib import Path
+import pandas as pd
+
+pasta_inep = Path(
+    r"D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar\data\raw\2. INEP — Indicadores Educacionais (Fatores Docentes e Socioeconômicos)"
+)
+
+arq_ied = (
+    pasta_inep
+    / "B. Esforço Docente (IED)"
+    / "2023 IED"
+    / "IED_2023_ESCOLAS"
+    / "IED_ESCOLAS_2023.xlsx"
+)
+
+print(f"Inspecionando: {arq_ied.name}\n")
+
+# Lemos as primeiras 12 linhas sem header para detectar a linha correta
+df_raw = pd.read_excel(arq_ied, nrows=12, header=None)
+for idx, row in df_raw.iterrows():
+    valores = [str(v) for v in row.values if pd.notna(v)][:6]
+    print(f"Linha {idx}: {valores}")
+
+
+resultado obtido:
+
+O IED 2023 segue a mesma estrutura exata do IRD: os nomes técnicos das colunas começam na Linha 10 (header=10) e os dados na Linha 11.
+
+Note que as linhas 7, 8 e 9 do Excel mostram que o INEP divide os professores em Níveis de 1 a 6 (onde Nível 1 é esforço leve e Níveis 5 e 6 representam sobrecarga extrema de alunos e turnos) e separa por etapas: Ensino Fundamental e Ensino Médio.

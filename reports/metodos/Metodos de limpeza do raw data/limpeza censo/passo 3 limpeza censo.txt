@@ -1,0 +1,4 @@
+Passo 3": A Tabela de Ligação da SEDUC (De-Para CIE ↔ INEP)
+
+Você tem na pasta raw/1. SEDUC-SP — SARESP & Cadastro de Escolas/B - Tabela de Ligação (De-Para CIE - INEP) alguns arquivos chamados ENDERECO_ESCOLAS....
+
