@@ -1,0 +1,238 @@
+Passo 7 — A Camada Gold (tcc_dataset_analitico_final):
+
+O que ele executa:
+
+1 Faz o relacionamento das 3 tabelas Silver:
+
+	* Espinha de Escolas e Infraestrutura (01_escolas_base.parquet);
+
+	* Indicadores Docentes e Socioeconômicos do INEP (02_indicadores_inep.parquet);
+
+	* Target Trienal Ponderado (06_target_trienal.parquet);
+
+2 Aplica o corte estatístico metodológico de robustez (Ntriênio ≥ 10), isolando as microclasses atípicas e documentando quais são;
+
+3 Audita o preenchimento de cada variável preditora (X) e do target (Y);
+
+4 Exporta os artefatos de entrega finais:
+
+	* data/gold/tcc_dataset_analitico_final.parquet (para o treinamento de modelos);
+
+	* data/gold/tcc_dataset_analitico_final.csv (para inspeção tabular / Excel / R).
+
+
+
+Código:
+
+
+"""
+=============================================================================
+PIPELINE 07: CONSOLIDAÇÃO DO DATASET ANALÍTICO FINAL (CAMADA GOLD)
+=============================================================================
+Objetivo:
+  Integrar todas as dimensões tratadas na Camada Silver:
+    1. Espinha Dorsal de Escolas e Infraestrutura (01_escolas_base.parquet)
+    2. Fatores Docentes e Socioeconômicos INEP (02_indicadores_inep.parquet)
+    3. Target Trienal de Desempenho Escolar Y (06_target_trienal.parquet)
+
+  Aplicar o filtro de corte amostral metodológico (N_trienio >= 10) para
+  eliminar microclasses atípicas (Fundação CASA, presídios, hospitais) e
+  gerar a base final de modelagem preditiva para o TCC.
+
+Saídas:
+  - data/gold/tcc_dataset_analitico_final.parquet (para algoritmos de ML)
+  - data/gold/tcc_dataset_analitico_final.csv (para inspeção tabular)
+=============================================================================
+"""
+
+from pathlib import Path
+import pandas as pd
+import numpy as np
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+SILVER_DIR = PROJECT_ROOT / "data" / "silver"
+GOLD_DIR = PROJECT_ROOT / "data" / "gold"
+
+ARQUIVO_ESCOLAS = SILVER_DIR / "01_escolas_base.parquet"
+ARQUIVO_INEP = SILVER_DIR / "02_indicadores_inep.parquet"
+ARQUIVO_TARGET = SILVER_DIR / "06_target_trienal.parquet"
+
+OUTPUT_GOLD_PARQUET = GOLD_DIR / "tcc_dataset_analitico_final.parquet"
+OUTPUT_GOLD_CSV = GOLD_DIR / "tcc_dataset_analitico_final.csv"
+
+def executar_pipeline():
+    print("=" * 70)
+    print("INICIANDO PIPELINE 07: CONSOLIDAÇÃO DO DATASET ANALÍTICO (CAMADA GOLD)")
+    print("=" * 70)
+
+    # 1. Carregamento das Tabelas Silver
+    print("\n1. Carregando tabelas da Camada Silver...")
+    df_escolas = pd.read_parquet(ARQUIVO_ESCOLAS)
+    df_inep = pd.read_parquet(ARQUIVO_INEP)
+    df_target = pd.read_parquet(ARQUIVO_TARGET)
+
+    print(f"   - Escolas e Infraestrutura: {df_escolas.shape[0]:,} escolas ({df_escolas.shape[1]} colunas)")
+    print(f"   - Indicadores INEP:         {df_inep.shape[0]:,} escolas ({df_inep.shape[1]} colunas)")
+    print(f"   - Target Trienal:           {df_target.shape[0]:,} escolas ({df_target.shape[1]} colunas)")
+
+    # 2. Junção Relacional das Dimensões
+    print("\n2. Realizando junção relacional (Left Join INEP -> Inner Join Target)...")
+    
+    # Junção Censo + INEP via CO_ENTIDADE (código INEP de 8 dígitos)
+    df_gold = df_escolas.merge(df_inep, on='CO_ENTIDADE', how='left')
+    print(f"   -> Pós-merge INEP: {len(df_gold):,} escolas")
+
+    # Junção com o Target Trienal via CODESC (código CIE de 6 dígitos)
+    df_gold = df_gold.merge(df_target, on='CODESC', how='inner')
+    print(f"   -> Pós-merge Target Trienal: {len(df_gold):,} escolas com notas consolidadas")
+
+    # 3. Funil Amostral e Filtro de Robustez Estatística
+    print("\n3. Aplicando filtro metodológico de corte amostral (Robustez Estatística)...")
+    total_antes_filtro = len(df_gold)
+    
+    # Identificar e isolar microclasses atípicas (< 10 alunos no triênio)
+    mask_micro = df_gold['TOTAL_ALUNOS_TRIENIO'] < 10
+    qtd_micro = mask_micro.sum()
+    
+    print(f"   - Total antes do corte: {total_antes_filtro:,} escolas")
+    print(f"   - Microclasses identificadas (N < 10 alunos no triênio): {qtd_micro} escolas ({qtd_micro/total_antes_filtro*100:.2f}%)")
+    
+    if qtd_micro > 0:
+        col_nome = 'NOMESC' if 'NOMESC' in df_gold.columns else 'CODESC'
+        col_mun = 'MUN' if 'MUN' in df_gold.columns else 'CODESC'
+        amostra_micro = df_gold.loc[mask_micro, ['CODESC', col_nome, col_mun, 'TOTAL_ALUNOS_TRIENIO', 'TARGET_TRIENAL_MAT']].head(5)
+        print("   Exemplos de microclasses excluídas:")
+        for _, row in amostra_micro.iterrows():
+            print(f"     * [{row['CODESC']}] {row[col_nome]} ({row[col_mun]}): {row['TOTAL_ALUNOS_TRIENIO']} alunos | Nota: {row['TARGET_TRIENAL_MAT']}%")
+
+    # Aplicação do corte: manter apenas escolas com volume estatístico robusto
+    df_gold_filtrado = df_gold[~mask_micro].copy()
+    print(f"\n   -> Dataset Gold Aprovado: {len(df_gold_filtrado):,} escolas estaduais regulares!")
+
+    # 4. Quality Gates da Camada Gold
+    print("\n4. Executando Quality Gates da Camada Gold...")
+    
+    # Gate A: Chaves Primárias
+    assert df_gold_filtrado['CODESC'].is_unique, "[FALHA] CODESC duplicado no dataset Gold!"
+    assert df_gold_filtrado['CO_ENTIDADE'].is_unique, "[FALHA] CO_ENTIDADE duplicado no dataset Gold!"
+    print("   [PASS] Chaves primárias únicas e íntegras (CODESC e CO_ENTIDADE).")
+
+    # Gate B: Target não nulo e no intervalo [0, 100]
+    assert df_gold_filtrado['TARGET_TRIENAL_MAT'].notna().all(), "[FALHA] Há valores nulos no Target Y!"
+    assert ((df_gold_filtrado['TARGET_TRIENAL_MAT'] >= 0.0) & (df_gold_filtrado['TARGET_TRIENAL_MAT'] <= 100.0)).all(), \
+        "[FALHA] Target Y com valores fora do intervalo [0.0, 100.0]!"
+    print("   [PASS] Variável-alvo Y (TARGET_TRIENAL_MAT) 100% preenchida e válida.")
+
+    # Gate C: Volume de alunos
+    assert (df_gold_filtrado['TOTAL_ALUNOS_TRIENIO'] >= 10).all(), "[FALHA] Há escolas com menos de 10 alunos!"
+    print("   [PASS] Todas as escolas possuem N >= 10 estudantes avaliados no triênio.")
+
+    # 5. Auditoria de Preenchimento das Features X
+    print("\n5. Auditoria de Cobertura das Variáveis Preditoras (Features X):")
+    total_linhas = len(df_gold_filtrado)
+    for col in df_gold_filtrado.columns:
+        nulos = df_gold_filtrado[col].isna().sum()
+        if nulos > 0:
+            taxa_preenchimento = ((total_linhas - nulos) / total_linhas) * 100
+            print(f"   - {col:<25}: {nulos} nulos ({taxa_preenchimento:.1f}% preenchida)")
+
+    # 6. Exportação dos Artefatos Finais
+    GOLD_DIR.mkdir(parents=True, exist_ok=True)
+
+    print("\n6. Exportando artefatos da Camada Gold...")
+    # Salvando em Parquet
+    df_gold_filtrado.to_parquet(OUTPUT_GOLD_PARQUET, index=False)
+    print(f"   -> Parquet: {OUTPUT_GOLD_PARQUET}")
+    print(f"      Tamanho: {OUTPUT_GOLD_PARQUET.stat().st_size / 1024:.1f} KB")
+
+    # Salvando em CSV
+    df_gold_filtrado.to_csv(OUTPUT_GOLD_CSV, index=False, sep=';', decimal=',')
+    print(f"   -> CSV:     {OUTPUT_GOLD_CSV}")
+    print(f"      Tamanho: {OUTPUT_GOLD_CSV.stat().st_size / 1024:.1f} KB")
+
+    print("\n" + "=" * 70)
+    print("RESUMO ESTATÍSTICO DO DATASET ANALÍTICO FINAL (CAMADA GOLD)")
+    print("=" * 70)
+    cols_resumo = [
+        'TOTAL_ALUNOS_TRIENIO', 'TARGET_TRIENAL_MAT',
+        'MEDIA_INSE', 'MEDIA_IRD', 'IED_SCORE_MEDIO',
+        'QT_SALAS_UTILIZADAS', 'QT_COMP_ALUNO'
+    ]
+    cols_existentes = [c for c in cols_resumo if c in df_gold_filtrado.columns]
+    print(df_gold_filtrado[cols_existentes].describe().T[['count', 'mean', 'std', 'min', '50%', 'max']])
+    print("\n[SUCESSO] Camada Gold concluída com perfeição técnica e científica!")
+
+if __name__ == "__main__":
+    executar_pipeline()
+
+
+resultado esperado:
+
+PS D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar> & C:/Python314/python.exe "d:/TCC/Quinzena 3 - Material e metodo/tcc_desempenho_escolar/pipelines/04_Consolidacao_Gold/01_build_master_dataset.py"
+======================================================================
+INICIANDO PIPELINE 07: CONSOLIDAÇÃO DO DATASET ANALÍTICO (CAMADA GOLD)
+======================================================================
+
+1. Carregando tabelas da Camada Silver...
+   - Escolas e Infraestrutura: 3,734 escolas (20 colunas)
+   - Indicadores INEP:         28,232 escolas (13 colunas)
+   - Target Trienal:           4,007 escolas (12 colunas)
+
+2. Realizando junção relacional (Left Join INEP -> Inner Join Target)...
+   -> Pós-merge INEP: 3,734 escolas
+   -> Pós-merge Target Trienal: 3,705 escolas com notas consolidadas
+
+3. Aplicando filtro metodológico de corte amostral (Robustez Estatística)...
+   - Total antes do corte: 3,705 escolas
+   - Microclasses identificadas (N < 10 alunos no triênio): 94 escolas (2.54%)
+   Exemplos de microclasses excluídas:
+     * [005693] BAIRRO DE BOMBAS (IPORANGA): 3 alunos | Nota: 14.83%
+     * [006283] BAIRRO BOMBAS DE CIMA (IPORANGA): 2 alunos | Nota: 22.25%
+     * [006804] ARLINDO AQUINO DE OLIVEIRA DOUTOR (MOGI DAS CRUZES): 1 alunos | Nota: 37.5%
+     * [040186] AZARIAS RIBEIRO CEL (MARACAI): 9 alunos | Nota: 19.69%
+     * [042006] JUAREZ TAVORA MARECHAL (SANTO ANDRE): 7 alunos | Nota: 36.31%
+
+   -> Dataset Gold Aprovado: 3,611 escolas estaduais regulares!
+
+4. Executando Quality Gates da Camada Gold...
+   [PASS] Chaves primárias únicas e íntegras (CODESC e CO_ENTIDADE).
+   [PASS] Variável-alvo Y (TARGET_TRIENAL_MAT) 100% preenchida e válida.
+   [PASS] Todas as escolas possuem N >= 10 estudantes avaliados no triênio.
+
+5. Auditoria de Cobertura das Variáveis Preditoras (Features X):
+   - IN_BANDA_LARGA           : 7 nulos (99.8% preenchida)
+   - MEDIA_INSE               : 17 nulos (99.5% preenchida)
+   - INSE_CLASSIFICACAO       : 17 nulos (99.5% preenchida)
+   - QTD_ALUNOS_INSE          : 17 nulos (99.5% preenchida)
+   - IRD_MEDIO                : 3 nulos (99.9% preenchida)
+   - MEDIA_ACERTOS_2022       : 210 nulos (94.2% preenchida)
+   - QTD_ALUNOS_2022          : 210 nulos (94.2% preenchida)
+   - MEDIA_ACERTOS_2023       : 18 nulos (99.5% preenchida)
+   - QTD_ALUNOS_2023          : 18 nulos (99.5% preenchida)
+   - MEDIA_ACERTOS_2024       : 28 nulos (99.2% preenchida)
+   - QTD_ALUNOS_2024          : 28 nulos (99.2% preenchida)
+   - MEDIA_PROFIC_2022        : 210 nulos (94.2% preenchida)
+   - NOTA_MED_MAT_2024        : 28 nulos (99.2% preenchida)
+
+6. Exportando artefatos da Camada Gold...
+   -> Parquet: D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar\data\gold\tcc_dataset_analitico_final.parquet
+      Tamanho: 417.3 KB
+   -> CSV:     D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar\data\gold\tcc_dataset_analitico_final.csv
+      Tamanho: 983.4 KB
+
+======================================================================
+RESUMO ESTATÍSTICO DO DATASET ANALÍTICO FINAL (CAMADA GOLD)
+======================================================================
+                       count        mean         std    min      50%       max
+TOTAL_ALUNOS_TRIENIO  3611.0  218.658543  179.261424  10.00  171.000  1436.000
+TARGET_TRIENAL_MAT    3611.0   30.932110    3.862625  21.01   30.350    67.460
+MEDIA_INSE            3594.0    5.247159    0.229916   4.26    5.240     6.000
+IED_SCORE_MEDIO       3611.0    3.692911    0.462902   2.00    3.769     4.865
+QT_SALAS_UTILIZADAS   3611.0   13.451952    4.466447   3.00   13.000    35.000
+QT_COMP_ALUNO         3611.0   69.517585   49.476074   0.00   62.000   476.000
+
+[SUCESSO] Camada Gold concluída com perfeição técnica e científica!
+PS D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar> 
+
+
+

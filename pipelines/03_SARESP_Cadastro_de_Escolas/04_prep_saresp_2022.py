@@ -1,0 +1,170 @@
+"""PIPELINE 03: AGREGAÇÃO DOS MICRODADOS DO SARESP 2022 (NÍVEL ESCOLA)
+
+Camada: Bronze -> Silver
+Entrada:
+  - data/raw/1. SEDUC-SP — SARESP & Cadastro de Escolas/A - Microdados do SARESP/Microdados de Alunos - SARESP_Provao - 2022/MICRODADOS SARESP 2022 - DADOS ABERTO_0.csv
+Saída:
+  - data/silver/03_saresp_2022_escola.parquet
+"""
+
+from pathlib import Path
+import numpy as np
+import pandas as pd
+
+# -------------------------------------------------------------------------
+# 1. CONFIGURAÇÃO DE CAMINHOS
+# -------------------------------------------------------------------------
+DIRETORIO_RAIZ = Path(r"D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar")
+ARQUIVO_SARESP_2022 = (
+    DIRETORIO_RAIZ
+    / "data"
+    / "raw"
+    / "1. SEDUC-SP — SARESP & Cadastro de Escolas"
+    / "A - Microdados do SARESP (Variável-Alvo Y)"
+    / "Microdados de Alunos - SARESP_Provao - 2022"
+    / "MICRODADOS SARESP 2022 - DADOS ABERTO_0.csv"
+)
+
+PASTA_SILVER = DIRETORIO_RAIZ / "data" / "silver"
+ARQUIVO_BASE_ESCOLAS = PASTA_SILVER / "01_escolas_base.parquet"
+ARQUIVO_SAIDA = PASTA_SILVER / "03_saresp_2022_escola.parquet"
+
+print("=================================================================")
+print("INICIANDO PIPELINE 03: AGREGAÇÃO DO SARESP 2022 (SILVER)")
+print("=================================================================\n")
+
+# -------------------------------------------------------------------------
+# 2. LEITURA E FILTRAGEM DOS MICRODADOS DOS ALUNOS
+# -------------------------------------------------------------------------
+print("1. Lendo e filtrando alunos da 3ª série do EM (SARESP 2022)...")
+
+colunas_interesse = [
+    "CODESC",
+    "TIPOCLASSE",
+    "SERIE_ANO",
+    "validade",
+    "particip_mat",
+    "porc_ACERT_MAT",
+    "profic_mat",
+    "nivel_profic_mat",
+]
+
+df_alunos = pd.read_csv(
+    ARQUIVO_SARESP_2022,
+    sep=";",
+    encoding="latin1",
+    usecols=colunas_interesse,
+    dtype=str,
+)
+
+# Filtros da coorte e validade
+filtro_alunos = (
+    (df_alunos["SERIE_ANO"].str.strip() == "EM-3 serie")
+    & (df_alunos["TIPOCLASSE"].str.strip() == "0")  # regular
+    & (df_alunos["validade"].str.strip() == "1")  # nota válida
+    & (df_alunos["particip_mat"].str.strip() == "1")  # presente
+    & (df_alunos["porc_ACERT_MAT"].notna())
+)
+
+df_alunos = df_alunos[filtro_alunos].copy()
+print(f"   -> Alunos válidos selecionados: {len(df_alunos):,}")
+
+# Padronizar código da escola (6 dígitos)
+df_alunos["CODESC"] = df_alunos["CODESC"].str.strip().str.zfill(6)
+
+# Tratar números decimais (trocar vírgula por ponto)
+df_alunos["porc_ACERT_MAT"] = pd.to_numeric(
+    df_alunos["porc_ACERT_MAT"].str.replace(",", "."), errors="coerce"
+)
+df_alunos["profic_mat"] = pd.to_numeric(
+    df_alunos["profic_mat"].str.replace(",", "."), errors="coerce"
+)
+
+# Criar flags de nível de proficiência
+df_alunos["flag_abaixo_basico"] = (
+    df_alunos["nivel_profic_mat"].str.contains("Abaixo", na=False).astype(int)
+)
+df_alunos["flag_adeq_avanc"] = (
+    df_alunos["nivel_profic_mat"]
+    .str.contains("Adequado|Avan", na=False)
+    .astype(int)
+)
+
+# -------------------------------------------------------------------------
+# 3. AGREGAÇÃO NO NÍVEL DA ESCOLA
+# -------------------------------------------------------------------------
+print("\n2. Agregando métricas por escola...")
+
+df_escola = (
+    df_alunos.groupby("CODESC")
+    .agg(
+        QTD_ALUNOS_2022=("porc_ACERT_MAT", "count"),
+        MEDIA_ACERTOS_2022=("porc_ACERT_MAT", "mean"),
+        MEDIA_PROFIC_2022=("profic_mat", "mean"),
+        PERC_ABAIXO_2022=("flag_abaixo_basico", lambda x: x.mean() * 100.0),
+        PERC_ADEQ_AVANC_2022=("flag_adeq_avanc", lambda x: x.mean() * 100.0),
+    )
+    .reset_index()
+)
+
+# Arredondar métricas para 2 casas decimais
+cols_float = [
+    "MEDIA_ACERTOS_2022",
+    "MEDIA_PROFIC_2022",
+    "PERC_ABAIXO_2022",
+    "PERC_ADEQ_AVANC_2022",
+]
+for col in cols_float:
+    df_escola[col] = df_escola[col].round(2)
+
+print(f"   -> Escolas agregadas: {len(df_escola):,}")
+
+# -------------------------------------------------------------------------
+# 4. QUALITY GATES (VALIDAÇÕES DE QUALIDADE)
+# -------------------------------------------------------------------------
+print("\n3. Executando Quality Gates de Validação...")
+
+# 1. Limites teóricos das métricas
+assert (
+    (df_escola["MEDIA_ACERTOS_2022"] >= 0.0)
+    & (df_escola["MEDIA_ACERTOS_2022"] <= 100.0)
+).all(), "Erro: Média de acertos fora de [0, 100]!"
+assert (
+    (df_escola["PERC_ABAIXO_2022"] >= 0.0)
+    & (df_escola["PERC_ABAIXO_2022"] <= 100.0)
+).all(), "Erro: Perc Abaixo fora de [0, 100]!"
+print("   [PASS] Métricas contidas rigorosamente nos intervalos [0.0, 100.0].")
+
+# 2. Integridade de chaves
+assert df_escola["CODESC"].isna().sum() == 0, "Erro: CODESC nulos!"
+assert df_escola["CODESC"].duplicated().sum() == 0, "Erro: CODESC duplicados!"
+assert list(df_escola["CODESC"].str.len().unique()) == [
+    6
+], "Erro: Tamanho de CODESC inválido!"
+print("   [PASS] Chave primária CODESC é única e possui exatamente 6 dígitos.")
+
+# 3. Cruzamento com a base de escolas Silver (Passo 1)
+df_base = pd.read_parquet(ARQUIVO_BASE_ESCOLAS)
+cruzamento = set(df_escola["CODESC"]).intersection(set(df_base["CODESC"]))
+print(
+    f"   [COBERTURA] {len(cruzamento)}/{len(df_base)} escolas da base Silver avaliadas no SARESP ({len(cruzamento)/len(df_base)*100:.1f}%)."
+)
+
+# 4. Diagnóstico de Microclasses (conforme conversamos!)
+microclasses = df_escola[df_escola["QTD_ALUNOS_2022"] < 10]
+print(
+    f"   [DIAGNÓSTICO] Escolas com menos de 10 alunos avaliados em 2022: {len(microclasses)} escolas."
+)
+
+# -------------------------------------------------------------------------
+# 5. EXPORTAÇÃO DO ARTEFATO SILVER (PARQUET)
+# -------------------------------------------------------------------------
+df_escola.to_parquet(ARQUIVO_SAIDA, index=False, engine="pyarrow")
+print(f"\n[SUCESSO] Base Silver do SARESP 2022 gerada com sucesso:")
+print(f"   Destino: {ARQUIVO_SAIDA}")
+print(f"   Dimensões: {df_escola.shape[0]} linhas x {df_escola.shape[1]} colunas")
+print(f"   Tamanho do arquivo: {ARQUIVO_SAIDA.stat().st_size / 1024:.1f} KB")
+
+# Amostra das primeiras 5 escolas
+print("\n--- Amostra das primeiras 5 escolas no SARESP 2022 ---")
+print(df_escola.head(5).to_string(index=False))

@@ -1,0 +1,60 @@
+Provão Paulista 2023
+
+Script de inspeção pipelines 05_inspecionar_provao_2023.py:
+
+from pathlib import Path
+import pandas as pd
+
+raiz = Path(r"D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar")
+arq_provao_2023 = (
+    raiz
+    / "data"
+    / "raw"
+    / "1. SEDUC-SP — SARESP & Cadastro de Escolas"
+    / "A - Microdados do SARESP (Variável-Alvo Y)"
+    / "Microdados de Alunos - SARESP_Provao - 2023"
+    / "Microdados de Alunos - Ensino Medio PROVAO - 2023.csv"
+)
+
+print(f"Inspecionando amostra do Provão Paulista 2023 (nrows=5)...\n")
+
+for enc in ["latin1", "utf-8"]:
+    try:
+        df_sample = pd.read_csv(
+            arq_provao_2023, sep=";", encoding=enc, nrows=5, dtype=str
+        )
+        print(f"Sucesso com encoding='{enc}' e separador=';'!\n")
+        print(f"Total de colunas no arquivo: {len(df_sample.columns)}")
+        print("\nLista de colunas:")
+        for col in df_sample.columns:
+            print(f" - {col}")
+        print("\nPrimeira linha de exemplo:")
+        print(df_sample.iloc[0].to_dict())
+        break
+    except Exception as e:
+        print(f"Falha com encoding='{enc}': {e}")
+
+
+resposta esperada:
+
+1 A Estrutura do Provão Paulista:
+
+	* Como o Provão Paulista é um vestibular seriado (que avalia os alunos ao longo de todo o Ensino Médio para vagas na USP, Unesp, Unicamp e Fatec), o arquivo contém a 1ª, 2ª e 3ª séries juntas! Veja que a primeira linha de exemplo era 'EM-1ª série'. Precisamos filtrar especificamente a 3ª série.
+
+2 Organização por Áreas do Conhecimento:
+
+	* As provas do Provão são agrupadas em dois dias:
+
+		* Dia 1: Linguagens e Ciências da Natureza (particip_lg_cn);
+		* Dia 2: Matemática e Ciências Humanas (particip_mat_ch).
+
+	* Portanto, a coluna de presença em Matemática é particip_mat_ch == '1'!
+
+3 A Métrica Universal de Matemática:
+
+	* Em 2022 (SARESP tradicional), a porcentagem de acertos chamava-se porc_ACERT_MAT.
+
+	* Em 2023 (Provão Paulista), ela se chama porc_mat!
+
+	* Note também que o Provão foca em acertos absolutos (acertos_mat) e percentuais (porc_mat), não tendo aquela coluna do SARESP antigo chamada nivel_profic_mat. A métrica contínua e universal entre todos os anos será a Média Percentual de Acertos em Matemática (MEDIA_ACERTOS).
+

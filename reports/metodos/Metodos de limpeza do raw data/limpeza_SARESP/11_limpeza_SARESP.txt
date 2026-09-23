@@ -1,0 +1,245 @@
+Passo 6: Consolidação do Target Trienal Ponderado (Y)
+
+Para evitar que flutuações amostrais de um único ano afetem a avaliação da escola, consolidamos as 3 edições (SARESP 2022, Provão 2023 e Provão 2024) utilizando a média ponderada pelo número de alunos avaliados em cada unidade:
+
+
+TARGET_TRIENAL_MAT = ∑t∈{2022,2023,2024}(QTD_ALUNOSt ⋅ MEDIA_ACERTOSt ) / ∑t∈{2022,2023,2024}QTD_ALUNOSt
+
+
+Além da nota ponderada, o pipeline apura:
+
+	* TOTAL_ALUNOS_TRIENIO: Total acumulado de estudantes da 3ª série avaliados ao longo do triênio na escola;
+
+	*  ANOS_AVALIADOS: Quantidade de anos com avaliação registrada (1, 2 ou 3 anos);
+
+	*  As notas de cada ano individual mantidas para comparação e auditoria analítica.
+
+
+"""
+=============================================================================
+PIPELINE 06: CONSOLIDAÇÃO DO TARGET TRIENAL PONDERADO (SILVER)
+=============================================================================
+Objetivo:
+  Consolidar as três avaliações estaduais de Matemática da 3ª série do EM:
+    - SARESP 2022 (03_saresp_2022_escola.parquet)
+    - Provão Paulista 2023 (04_provao_2023_escola.parquet)
+    - Provão Paulista 2024 (05_provao_2024_escola.parquet)
+
+  Calcular a variável-alvo (Y) do TCC por meio da média ponderada pelo volume
+  de estudantes avaliados em cada unidade escolar:
+  
+    TARGET_TRIENAL_MAT = sum(QTD_ALUNOS_t * MEDIA_ACERTOS_t) / sum(QTD_ALUNOS_t)
+
+Saída:
+  - data/silver/06_target_trienal.parquet
+
+Colunas Produzidas:
+  - CODESC: Chave primária da escola (6 dígitos)
+  - TARGET_TRIENAL_MAT: Média ponderada de acertos no triênio [0.0 - 100.0]
+  - TOTAL_ALUNOS_TRIENIO: Soma de alunos participantes avaliados no triênio
+  - ANOS_AVALIADOS: Número de edições presentes (1, 2 ou 3)
+  - MEDIA_ACERTOS_2022, MEDIA_ACERTOS_2023, MEDIA_ACERTOS_2024
+  - QTD_ALUNOS_2022, QTD_ALUNOS_2023, QTD_ALUNOS_2024
+=============================================================================
+"""
+
+from pathlib import Path
+import pandas as pd
+import numpy as np
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+SILVER_DIR = PROJECT_ROOT / "data" / "silver"
+
+ARQUIVO_2022 = SILVER_DIR / "03_saresp_2022_escola.parquet"
+ARQUIVO_2023 = SILVER_DIR / "04_provao_2023_escola.parquet"
+ARQUIVO_2024 = SILVER_DIR / "05_provao_2024_escola.parquet"
+ARQUIVO_ESCOLAS_REF = SILVER_DIR / "01_escolas_base.parquet"
+OUTPUT_TARGET = SILVER_DIR / "06_target_trienal.parquet"
+
+def executar_pipeline():
+    print("=" * 65)
+    print("INICIANDO PIPELINE 06: CONSOLIDAÇÃO DO TARGET TRIENAL (SILVER)")
+    print("=" * 65)
+
+    # 1. Carregar as três bases de avaliação
+    print("\n1. Carregando bases anuais de avaliação...")
+    df_2022 = pd.read_parquet(ARQUIVO_2022)
+    df_2023 = pd.read_parquet(ARQUIVO_2023)
+    df_2024 = pd.read_parquet(ARQUIVO_2024)
+
+    print(f"   - SARESP 2022:        {len(df_2022):,} escolas")
+    print(f"   - Provão Paulista 2023: {len(df_2023):,} escolas")
+    print(f"   - Provão Paulista 2024: {len(df_2024):,} escolas")
+
+    # 2. Junção completa (Outer Merge) para não perder nenhuma unidade avaliada
+    print("\n2. Realizando junção outer entre os 3 anos...")
+    df_merge = df_2022.merge(df_2023, on='CODESC', how='outer')
+    df_merge = df_merge.merge(df_2024, on='CODESC', how='outer')
+    print(f"   -> Universo total de escolas com ao menos 1 ano de avaliação: {len(df_merge):,}")
+
+    # 3. Cálculo da Média Ponderada
+    print("\n3. Calculando o Target Trienal ponderado por alunos avaliados...")
+    # Preenchimento temporário com 0 para o somatório matricial
+    q22 = df_merge['QTD_ALUNOS_2022'].fillna(0)
+    q23 = df_merge['QTD_ALUNOS_2023'].fillna(0)
+    q24 = df_merge['QTD_ALUNOS_2024'].fillna(0)
+
+    m22 = df_merge['MEDIA_ACERTOS_2022'].fillna(0)
+    m23 = df_merge['MEDIA_ACERTOS_2023'].fillna(0)
+    m24 = df_merge['MEDIA_ACERTOS_2024'].fillna(0)
+
+    total_alunos = q22 + q23 + q24
+    soma_ponderada = (q22 * m22) + (q23 * m23) + (q24 * m24)
+
+    # Média ponderada (apenas onde total_alunos > 0)
+    df_merge['TARGET_TRIENAL_MAT'] = np.where(
+        total_alunos > 0,
+        (soma_ponderada / total_alunos).round(2),
+        np.nan
+    )
+    df_merge['TOTAL_ALUNOS_TRIENIO'] = total_alunos.astype(int)
+
+    # Contagem de anos presentes
+    df_merge['ANOS_AVALIADOS'] = (
+        df_merge['MEDIA_ACERTOS_2022'].notna().astype(int) +
+        df_merge['MEDIA_ACERTOS_2023'].notna().astype(int) +
+        df_merge['MEDIA_ACERTOS_2024'].notna().astype(int)
+    )
+
+    # 4. Quality Gates
+    print("\n4. Executando Quality Gates de Validação...")
+    
+    # Gate A: Intervalo válido
+    valid_targets = df_merge['TARGET_TRIENAL_MAT'].dropna()
+    assert (valid_targets >= 0.0).all() and (valid_targets <= 100.0).all(), \
+        "[FALHA] Há valores do Target Trienal fora do intervalo [0.0, 100.0]!"
+    print("   [PASS] Target Trienal rigorosamente contido no intervalo [0.0, 100.0].")
+
+    # Gate B: Chave CODESC única e padronizada
+    assert df_merge['CODESC'].is_unique, "[FALHA] CODESC duplicado!"
+    assert (df_merge['CODESC'].str.len() == 6).all(), "[FALHA] CODESC fora do padrão de 6 dígitos!"
+    print("   [PASS] Chave primária CODESC é única e possui exatamente 6 dígitos.")
+
+    # Gate C: Cruzamento com a base de escolas do Censo
+    df_ref = pd.read_parquet(ARQUIVO_ESCOLAS_REF)
+    escolas_ref_set = set(df_ref['CODESC'].unique())
+    escolas_alvo_set = set(df_merge['CODESC'].unique())
+
+    comuns = escolas_ref_set.intersection(escolas_alvo_set)
+    taxa_cobertura = (len(comuns) / len(escolas_ref_set)) * 100
+    print(f"   [COBERTURA] {len(comuns)}/{len(escolas_ref_set)} escolas da base Silver possuem Target Trienal ({taxa_cobertura:.1f}%).")
+
+    # Distribuição de anos avaliados
+    print("\n   Distribuição de anos de avaliação por escola:")
+    print(df_merge['ANOS_AVALIADOS'].value_counts().sort_index().to_dict())
+
+    # Diagnóstico de microclasses consolidadas
+    micro_10 = (df_merge['TOTAL_ALUNOS_TRIENIO'] < 10).sum()
+    micro_15 = (df_merge['TOTAL_ALUNOS_TRIENIO'] < 15).sum()
+    print(f"   [DIAGNÓSTICO] Escolas com TOTAL acumulado de alunos no triênio < 10: {micro_10} escolas")
+    print(f"   [DIAGNÓSTICO] Escolas com TOTAL acumulado de alunos no triênio < 15: {micro_15} escolas")
+
+    # 5. Organização das Colunas e Salvamento
+    colunas_finais = [
+        'CODESC',
+        'TARGET_TRIENAL_MAT',
+        'TOTAL_ALUNOS_TRIENIO',
+        'ANOS_AVALIADOS',
+        'MEDIA_ACERTOS_2022',
+        'QTD_ALUNOS_2022',
+        'MEDIA_ACERTOS_2023',
+        'QTD_ALUNOS_2023',
+        'MEDIA_ACERTOS_2024',
+        'QTD_ALUNOS_2024',
+        'MEDIA_PROFIC_2022',
+        'NOTA_MED_MAT_2024'
+    ]
+    
+    # Selecionar apenas as colunas existentes no merge
+    colunas_presentes = [c for c in colunas_finais if c in df_merge.columns]
+    df_final = df_merge[colunas_presentes].copy()
+
+    OUTPUT_TARGET.parent.mkdir(parents=True, exist_ok=True)
+    df_final.to_parquet(OUTPUT_TARGET, index=False)
+
+    print(f"\n[SUCESSO] Base Silver do Target Trienal gerada com sucesso:")
+    print(f"   Destino: {OUTPUT_TARGET}")
+    print(f"   Dimensões: {df_final.shape[0]:,} escolas x {df_final.shape[1]} colunas")
+    print(f"   Tamanho em disco: {OUTPUT_TARGET.stat().st_size / 1024:.1f} KB")
+
+    print("\nResumo Estatístico do Target Trienal (Y):")
+    print(df_final[['TOTAL_ALUNOS_TRIENIO', 'TARGET_TRIENAL_MAT', 'MEDIA_ACERTOS_2022', 'MEDIA_ACERTOS_2023', 'MEDIA_ACERTOS_2024']].describe().T[['count', 'mean', 'std', 'min', '50%', 'max']])
+
+if __name__ == "__main__":
+    executar_pipeline()
+
+
+resposta  esperada  aproximada:
+
+
+PS D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar> & C:/Python314/python.exe "d:/TCC/Quinzena 3 - Material e metodo/tcc_desempenho_escolar/pipelines/03_SARESP_Cadastro_de_Escolas/11_build_target_trienal.py"
+=================================================================
+INICIANDO PIPELINE 06: CONSOLIDAÇÃO DO TARGET TRIENAL (SILVER)
+=================================================================
+
+1. Carregando bases anuais de avaliação...
+   - SARESP 2022:        3,650 escolas
+   - Provão Paulista 2023: 3,944 escolas
+   - Provão Paulista 2024: 3,940 escolas
+
+2. Realizando junção outer entre os 3 anos...
+   -> Universo total de escolas com ao menos 1 ano de avaliação: 4,007
+
+3. Calculando o Target Trienal ponderado por alunos avaliados...
+
+4. Executando Quality Gates de Validação...
+   [PASS] Target Trienal rigorosamente contido no intervalo [0.0, 100.0].
+   [PASS] Chave primária CODESC é única e possui exatamente 6 dígitos.
+   [COBERTURA] 3705/3734 escolas da base Silver possuem Target Trienal (99.2%).
+
+   Distribuição de anos de avaliação por escola:
+{1: 77, 2: 333, 3: 3597}
+   [DIAGNÓSTICO] Escolas com TOTAL acumulado de alunos no triênio < 10: 96 escolas
+   [DIAGNÓSTICO] Escolas com TOTAL acumulado de alunos no triênio < 15: 116 escolas
+
+[SUCESSO] Base Silver do Target Trienal gerada com sucesso:
+   Destino: D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar\data\silver\06_target_trienal.parquet
+   Dimensões: 4,007 escolas x 12 colunas
+   Tamanho em disco: 130.9 KB
+
+Resumo Estatístico do Target Trienal (Y):
+                       count        mean         std    min     50%      max
+TOTAL_ALUNOS_TRIENIO  4007.0  220.717994  185.655053   1.00  172.00  1436.00
+TARGET_TRIENAL_MAT    4007.0   31.509004    5.340514   5.00   30.55    67.46
+MEDIA_ACERTOS_2022    3650.0   40.265827    8.155142  14.55   38.38    84.35
+MEDIA_ACERTOS_2023    3944.0   26.045956    4.096279   5.00   25.42    61.02
+MEDIA_ACERTOS_2024    3940.0   28.526525    5.536412   0.00   27.53    91.24
+PS D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar> 
+
+
+em outras palavras:
+
+1 Representatividade Longitudinal Absoluta:
+
+	* 3.597 escolas (89,8%) participaram ativamente dos 3 anos ininterruptos!
+
+	* 333 escolas em 2 anos;
+
+	* Apenas 77 em 1 único ano.
+
+2 Cobertura Quase Total:
+
+	* 3.705 de 3.734 escolas da base do Censo têm nota no triênio (99,2% de cobertura)!
+
+3 Distribuição Estatística Perfeita do Y:
+
+	* Média do Triênio: 31,51% de acertos;
+
+	* Mediana: 30,55%;
+
+	* Desvio Padrão: 5,34%;
+
+	* Volume médio de estudantes por escola: 220,7 alunos.
+
+
+	

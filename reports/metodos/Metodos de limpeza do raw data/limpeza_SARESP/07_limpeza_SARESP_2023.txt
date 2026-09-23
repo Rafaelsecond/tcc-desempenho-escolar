@@ -1,0 +1,21 @@
+Passo 4 Oficial: 07_prep_provao_2023.py
+
+Construir o pipeline oficial da camada Silver do Provão Paulista 2023:
+
+	* Agrega as notas de Matemática dos alunos por escola (CODESC de 6 dígitos);
+
+	* Calcula:
+
+		* QTD_ALUNOS_2023: total de alunos avaliados na escola;
+
+		* MEDIA_ACERTOS_2023: média percentual de acertos em Matemática (0.0 ≤ x ≤ 100.0);
+
+		* MEDIA_ACERTOS_ABS_2023: média absoluta de questões acertadas;
+
+		* PERC_ABAIXO_30_2023: percentual de alunos com acerto inferior a 30% (métrica de corte para baixo rendimento);
+
+	* Valida os limites estatísticos e checa microclasses (N < 10);
+
+	* Salva o artefato oficial: data/silver/04_provao_2023_escola.parquet.
+
+

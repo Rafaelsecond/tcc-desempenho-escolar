@@ -1,0 +1,47 @@
+Passo 3.1: Inspecionar os arquivos de microdados de avaliação:
+
+Para começar com precisão, precisamos ver o nome e tamanho exatos dos arquivos de avaliações que estão na pasta raw.
+
+01_inspecionar_arquivos_saresp.py
+
+código de inspeção:
+
+from pathlib import Path
+
+raiz = Path(r"D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar")
+pasta_raw = raiz / "data" / "raw"
+
+print(f"Buscando pastas de avaliações dentro de:\n{pasta_raw}\n")
+
+# Localiza dinamicamente qualquer pasta que tenha 'SARESP' ou 'SEDUC'
+pastas_candidatas = [
+    p
+    for p in pasta_raw.iterdir()
+    if p.is_dir() and ("SEDUC" in p.name or "SARESP" in p.name)
+]
+
+for p_seduc in pastas_candidatas:
+    print(f"📁 Pasta Principal Encontrada: {p_seduc.name}")
+    # Busca recursiva em todos os níveis
+    arquivos = [f for f in p_seduc.rglob("*") if f.is_file()]
+
+    if not arquivos:
+        print("   (Nenhum arquivo encontrado)")
+    else:
+        for arq in sorted(arquivos):
+            tamanho_mb = arq.stat().st_size / (1024 * 1024)
+            rel = arq.relative_to(p_seduc)
+            print(f"   └── 📄 {rel} ({tamanho_mb:.2f} MB)")
+    print()
+
+
+retorno esperado:
+
+1 Dicionário Oficial: Dicionario Microdados SARESP-PROVAO PAULISTA_0.csv (temos a descrição de todas as variáveis das avaliações!);
+
+2 2022: MICRODADOS SARESP 2022 - DADOS ABERTO_0.csv (387.7 MB) — contém todos os alunos avaliados em 2022;
+
+3 2023: Microdados de Alunos - Ensino Medio PROVAO - 2023.csv (370.5 MB) — já separado especificamente para o Ensino Médio!;
+
+4 2024: Microdados de Alunos - Ensino Medio PROVAO - 2024.csv (427.2 MB) — também já focado no Ensino Médio!
+

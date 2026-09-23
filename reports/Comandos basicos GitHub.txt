@@ -1,5 +1,0 @@
-A partir de agora, sempre que fizer novas alterações no código e quiser enviar para o GitHub, basta usar o fluxo padrão:
-
-git add .
-git commit -m "sua mensagem descritiva"
-git push
