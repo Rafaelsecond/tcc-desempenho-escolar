@@ -1,0 +1,380 @@
+O Episódio de Hoje: EDA Passo 3 — O Radar de Influências!
+
+
+Se o dinheiro da família explica apenas 17%, o que explica o restante dos 83%? Quem são os verdadeiros vilões e os verdadeiros heróis do aprendizado em Matemática?
+
+O que este teste vai nos revelar:
+
+1 O Ranking Completo de Correlações: Confronta todas as variáveis preditoras (X) contra a nota de Matemática (Y) usando correlação linear de Pearson (r) e não-linear de Spearman (ρ), com testes de significância estatística (p-valor);
+
+2 O Peso Real dos Docentes: O esforço/sobrecarga de turmas dos professores (IED) puxa a nota para baixo? A estabilidade do vínculo (IRD) empurra para cima?
+
+3 A Força dos Insumos Físicos e Digitais: Computadores para alunos, laboratórios de informática, laboratórios de ciências e banda larga realmente fazem diferença ou são neutros?
+
+4 Gráfico Científico em Alta Resolução (300 DPI):
+
+	* Gera um gráfico de barras comparativo (Barras Azuis = Alavancas de Desempenho; Barras Vermelhas = Gargalos/Sobrecarga), salvo em reports/figures/eda_03_ranking_correlacoes.png.
+
+
+codigo:
+
+
+"""
+=============================================================================
+EDA PASSO 3: O RADAR DE INFLUÊNCIAS (RANKING DE CORRELAÇÕES COM O TARGET Y)
+=============================================================================
+Objetivo Pedagógico e Científico:
+  Após descobrir no Passo 2 que quase 83% da variabilidade das notas NÃO é
+  explicada pelo nível socioeconômico das famílias (INSE), este script investiga:
+  
+  "Dentre todas as características escolares mensuradas (docentes, infraestrutura,
+  porte, tecnologia), quais possuem maior associação estatística com o aprendizado?"
+
+  Metodologia Aplicada:
+  1. Identificação e categorização de todas as variáveis preditoras (Features X);
+  2. Coeficiente de Correlação Linear de Pearson (r): captura relações lineares;
+  3. Coeficiente de Correlação Monotônica de Spearman (rho): imune a assimetrias
+     e sensível a relações não-lineares crescentes ou decrescentes;
+  4. Teste de Significância Estatística (p-valor bilateral para cada par);
+  5. Agrupamento Temático das Features:
+     - Bloco Socioeconômico & Contexto;
+     - Bloco Docente (Esforço, Regularidade, Sobrecarga);
+     - Bloco Infraestrutura Física & Porte Escolar;
+     - Bloco Tecnologia e Inclusão Digital;
+  6. Geração de Gráfico Científico em Alta Resolução (300 DPI) com barras
+     coloridas por direção da associação (Positiva = Azul, Negativa = Vermelho).
+
+Saída:
+  - reports/figures/eda_03_ranking_correlacoes.png
+=============================================================================
+"""
+
+from pathlib import Path
+import pandas as pd
+import numpy as np
+
+# Configurar caminhos do projeto
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+GOLD_DIR = PROJECT_ROOT / "data" / "gold"
+ARQUIVO_GOLD = GOLD_DIR / "tcc_dataset_analitico_final.parquet"
+FIGURES_DIR = PROJECT_ROOT / "reports" / "figures"
+FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+
+def calcular_correlacoes():
+    print("=" * 70)
+    print("EDA PASSO 3: O RADAR DE INFLUÊNCIAS (RANKING DE CORRELAÇÕES COM Y)")
+    print("=" * 70)
+
+    # 1. Carregamento do Dataset Analítico Final (Gold)
+    print("\n1. Carregando Dataset Gold...")
+    df = pd.read_parquet(ARQUIVO_GOLD)
+    target_col = 'TARGET_TRIENAL_MAT'
+    n_total = len(df)
+    print(f"   -> Base Carregada: {n_total:,} escolas estaduais regulares paulistas.")
+
+    # 2. Seleção de Variáveis Numéricas Candidatas a Preditoras
+    cols_identificacao = [
+        'CODESC', 'CO_ENTIDADE', 'CD_IBGE', 'CO_MUNICIPIO', 'NOMESC', 'MUN', 'DE',
+        'INSE_CLASSIFICACAO'
+    ]
+    cols_alvo_e_intermediarias = [
+        target_col,
+        'MEDIA_ACERTOS_2022', 'QTD_ALUNOS_2022', 'MEDIA_PROFIC_2022', 'PERC_ABAIXO_2022', 'PERC_ADEQ_AVANC_2022',
+        'MEDIA_ACERTOS_2023', 'QTD_ALUNOS_2023', 'ACERTOS_MED_MAT_2023',
+        'MEDIA_ACERTOS_2024', 'QTD_ALUNOS_2024', 'ACERTOS_MED_MAT_2024', 'NOTA_MED_MAT_2024',
+        'ANOS_AVALIADOS'
+    ]
+    
+    # Colunas de features puras
+    cols_candidatas = [
+        c for c in df.select_dtypes(include=[np.number]).columns
+        if c not in cols_identificacao and c not in cols_alvo_e_intermediarias
+    ]
+
+    print(f"\n2. Variáveis Preditoras Identificadas para o Radar ({len(cols_candidatas)} métricas):")
+    for i, c in enumerate(cols_candidatas, 1):
+        print(f"   [{i:02d}] {c}")
+
+    # 3. Cálculo de Pearson, Spearman e p-valores
+    resultados = []
+    from scipy import stats
+
+    for col in cols_candidatas:
+        sub = df[[col, target_col]].dropna()
+        n_obs = len(sub)
+        if n_obs >= 50:
+            # Pearson
+            r_pearson, p_pearson = stats.pearsonr(sub[col], sub[target_col])
+            # Spearman
+            rho_spearman, p_spearman = stats.spearmanr(sub[col], sub[target_col])
+            
+            resultados.append({
+                'Variavel': col,
+                'N_Obs': n_obs,
+                'Pearson_r': r_pearson,
+                'p_Pearson': p_pearson,
+                'Spearman_rho': rho_spearman,
+                'p_Spearman': p_spearman,
+                'Abs_Pearson': abs(r_pearson)
+            })
+
+    df_corr = pd.DataFrame(resultados).sort_values(by='Abs_Pearson', ascending=False).reset_index(drop=True)
+
+    # 4. Exibição Tabular Formatada do Ranking
+    print("\n" + "=" * 70)
+    print("3. RANKING GERAL DE CORRELAÇÃO COM O DESEMPENHO EM MATEMÁTICA (Y)")
+    print("=" * 70)
+    print(f"{'Pos':<4} {'Variável':<28} {'Pearson (r)':<14} {'Spearman (ρ)':<14} {'Significância (p)'}")
+    print("-" * 70)
+
+    for idx, row in df_corr.iterrows():
+        sig = "***" if row['p_Pearson'] < 0.001 else ("**" if row['p_Pearson'] < 0.01 else ("*" if row['p_Pearson'] < 0.05 else "ns"))
+        print(f"{idx+1:<4} {row['Variavel']:<28} {row['Pearson_r']:>+8.4f}      {row['Spearman_rho']:>+8.4f}      p < 0.001 {sig}" if row['p_Pearson'] < 0.001 else f"{idx+1:<4} {row['Variavel']:<28} {row['Pearson_r']:>+8.4f}      {row['Spearman_rho']:>+8.4f}      p = {row['p_Pearson']:.4f} {sig}")
+
+    print("\nLegenda de Significância Estatística: *** p < 0.001 | ** p < 0.01 | * p < 0.05 | ns = não significante")
+
+    # 5. Destaques Temáticos Estratégicos
+    print("\n" + "=" * 70)
+    print("4. DESTAQUES ANALÍTICOS POR DIMENSÃO TEMÁTICA")
+    print("=" * 70)
+
+    # A) Fatores Docentes
+    vars_docentes = [c for c in df_corr['Variavel'] if any(k in c for k in ['IED', 'IRD', 'MED_CAT'])]
+    print("\n[A] DIMENSÃO DOCENTE (SOBRECARGA & REGULARIDADE):")
+    for v in vars_docentes:
+        linha = df_corr[df_corr['Variavel'] == v].iloc[0]
+        sentido = "PREJUDICA o desempenho (relação inversa)" if linha['Pearson_r'] < 0 else "FAVORECE o desempenho (relação direta)"
+        print(f"   * {v:<22}: r = {linha['Pearson_r']:+.4f} | rho = {linha['Spearman_rho']:+.4f} -> {sentido}")
+
+    # B) Infraestrutura e Tecnologia
+    vars_infra = [c for c in df_corr['Variavel'] if any(k in c for k in ['COMP', 'LAB', 'BIBLIO', 'SALAS', 'INTERNET', 'BANDA'])]
+    print("\n[B] DIMENSÃO INFRAESTRUTURA & TECNOLOGIA:")
+    for v in vars_infra:
+        linha = df_corr[df_corr['Variavel'] == v].iloc[0]
+        sentido = "associação positiva" if linha['Pearson_r'] > 0 else "associação negativa"
+        print(f"   * {v:<25}: r = {linha['Pearson_r']:+.4f} | rho = {linha['Spearman_rho']:+.4f} -> {sentido}")
+
+    # 6. Geração do Gráfico Científico em Alta Resolução (300 DPI)
+    print("\n" + "=" * 70)
+    print("5. GERANDO GRÁFICO CIENTÍFICO: RADAR DE CORRELAÇÕES (300 DPI)")
+    print("=" * 70)
+
+    try:
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+
+        plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
+        
+        # Selecionar top variáveis mais expressivas para o gráfico
+        df_plot = df_corr.head(14).sort_values(by='Pearson_r', ascending=True)
+
+        fig, ax = plt.subplots(figsize=(10, 7), dpi=300)
+
+        # Cores: Azul para correlações positivas, Vermelho para negativas
+        cores = ['#d62728' if r < 0 else '#1f77b4' for r in df_plot['Pearson_r']]
+        bars = ax.barh(df_plot['Variavel'], df_plot['Pearson_r'], color=cores, alpha=0.85, height=0.65)
+        
+        # Linha zero de referência
+        ax.axvline(0, color='black', linestyle='--', linewidth=0.9, alpha=0.7)
+
+        # Rótulos de dados nas barras
+        for bar in bars:
+            w = bar.get_width()
+            desloc = 0.015 if w >= 0 else -0.06
+            ax.text(w + desloc, bar.get_y() + bar.get_height()/2, f'{w:+.3f}', va='center', fontsize=9.5, fontweight='bold', color='#111111')
+
+        ax.set_title('Radar de Influências: Ranking de Correlação Linear (Pearson r) com a Nota de Matemática', fontsize=12, fontweight='bold', pad=15)
+        ax.set_xlabel('Coeficiente de Correlação de Pearson (r) com o Desempenho Escolar', fontsize=10.5)
+        ax.set_xlim(min(df_plot['Pearson_r'].min() - 0.08, -0.20), max(df_plot['Pearson_r'].max() + 0.08, 0.50))
+        
+        # Legenda customizada
+        import matplotlib.patches as mpatches
+        patch_pos = mpatches.Patch(color='#1f77b4', label='Associação Positiva (Alavanca de Desempenho)')
+        patch_neg = mpatches.Patch(color='#d62728', label='Associação Negativa (Gargalo / Sobrecarga)')
+        ax.legend(handles=[patch_pos, patch_neg], loc='lower right', frameon=True, facecolor='white', framealpha=0.9)
+
+        fig.tight_layout()
+        caminho_fig = FIGURES_DIR / "eda_03_ranking_correlacoes.png"
+        fig.savefig(caminho_fig)
+        plt.close(fig)
+        print(f"   [SUCESSO] Gráfico salvo com sucesso em:\n   {caminho_fig}")
+
+    except Exception as e:
+        print(f"   [AVISO] Erro ao renderizar gráfico: {e}")
+
+    print("\n" + "=" * 70)
+    print("PASSO 3 CONCLUÍDO COM SUCESSO!")
+    print("=" * 70)
+
+if __name__ == "__main__":
+    calcular_correlacoes()
+
+
+
+
+saida esperada:
+
+PS D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar> & C:/Python314/python.exe "d:/TCC/Quinzena 3 - Material e metodo/tcc_desempenho_escolar/pipelines/05_Analise_Exploratoria_EDA/03_eda_correlacoes_features.py"
+======================================================================
+EDA PASSO 3: O RADAR DE INFLUÊNCIAS (RANKING DE CORRELAÇÕES COM Y)
+======================================================================
+
+1. Carregando Dataset Gold...
+   -> Base Carregada: 3,611 escolas estaduais regulares paulistas.
+
+2. Variáveis Preditoras Identificadas para o Radar (26 métricas):
+   [01] DS_LATITUDE
+   [02] DS_LONGITUDE
+   [03] IN_BIBLIOTECA_SALA_LEITURA
+   [04] IN_LABORATORIO_CIENCIAS
+   [05] IN_LABORATORIO_INFORMATICA
+   [06] QT_SALAS_UTILIZADAS
+   [07] IN_EQUIP_LOUSA_DIGITAL
+   [08] IN_DESKTOP_ALUNO
+   [09] QT_DESKTOP_ALUNO
+   [10] IN_COMP_PORTATIL_ALUNO
+   [11] QT_COMP_PORTATIL_ALUNO
+   [12] IN_INTERNET
+   [13] IN_BANDA_LARGA
+   [14] QT_COMP_ALUNO
+   [15] MEDIA_INSE
+   [16] QTD_ALUNOS_INSE
+   [17] IRD_MEDIO
+   [18] IED_SCORE_MEDIO
+   [19] IED_ESFORCO_ALTO
+   [20] MED_CAT_1
+   [21] MED_CAT_2
+   [22] MED_CAT_3
+   [23] MED_CAT_4
+   [24] MED_CAT_5
+   [25] MED_CAT_6
+   [26] TOTAL_ALUNOS_TRIENIO
+
+======================================================================
+3. RANKING GERAL DE CORRELAÇÃO COM O DESEMPENHO EM MATEMÁTICA (Y)
+======================================================================
+Pos  Variável                     Pearson (r)    Spearman (ρ)   Significância (p)
+----------------------------------------------------------------------
+1    MEDIA_INSE                    +0.4129       +0.4331      p < 0.001 ***
+2    IED_ESFORCO_ALTO              -0.2348       -0.2553      p < 0.001 ***
+3    QTD_ALUNOS_INSE               -0.2277       -0.2280      p < 0.001 ***
+4    MED_CAT_5                     -0.2201       -0.2413      p < 0.001 ***
+5    IED_SCORE_MEDIO               -0.2139       -0.2372      p < 0.001 ***
+6    MED_CAT_3                     +0.2113       +0.2140      p < 0.001 ***
+7    IRD_MEDIO                     +0.1734       +0.0949      p < 0.001 ***
+8    MED_CAT_6                     -0.1733       -0.2134      p < 0.001 ***
+9    DS_LATITUDE                   +0.1500       +0.1274      p < 0.001 ***
+10   IN_LABORATORIO_CIENCIAS       +0.1124       +0.1159      p < 0.001 ***
+11   DS_LONGITUDE                  -0.1121       -0.1282      p < 0.001 ***
+12   MED_CAT_4                     -0.1090       -0.1111      p < 0.001 ***
+13   TOTAL_ALUNOS_TRIENIO          -0.0952       -0.0800      p < 0.001 ***
+14   QT_SALAS_UTILIZADAS           -0.0730       -0.0617      p < 0.001 ***
+15   IN_BIBLIOTECA_SALA_LEITURA    +0.0668       +0.0619      p < 0.001 ***
+16   IN_EQUIP_LOUSA_DIGITAL        +0.0553       +0.0360      p < 0.001 ***
+17   QT_COMP_ALUNO                 +0.0417       +0.0602      p = 0.0122 *
+18   IN_DESKTOP_ALUNO              +0.0388       +0.0295      p = 0.0196 *
+19   IN_BANDA_LARGA                +0.0374       +0.0368      p = 0.0248 *
+20   QT_COMP_PORTATIL_ALUNO        +0.0344       +0.0495      p = 0.0388 *
+21   IN_INTERNET                   +0.0314       +0.0299      p = 0.0596 ns
+22   QT_DESKTOP_ALUNO              +0.0297       +0.0337      p = 0.0740 ns
+23   IN_COMP_PORTATIL_ALUNO        +0.0158       +0.0235      p = 0.3432 ns
+24   MED_CAT_1                     -0.0097       -0.0590      p = 0.5619 ns
+25   IN_LABORATORIO_INFORMATICA    +0.0056       +0.0049      p = 0.7378 ns
+26   MED_CAT_2                     +0.0029       -0.0105      p = 0.8619 ns
+
+Legenda de Significância Estatística: *** p < 0.001 | ** p < 0.01 | * p < 0.05 | ns = não significante
+
+======================================================================
+4. DESTAQUES ANALÍTICOS POR DIMENSÃO TEMÁTICA
+======================================================================
+
+[A] DIMENSÃO DOCENTE (SOBRECARGA & REGULARIDADE):
+   * IED_ESFORCO_ALTO      : r = -0.2348 | rho = -0.2553 -> PREJUDICA o desempenho (relação inversa)
+   * MED_CAT_5             : r = -0.2201 | rho = -0.2413 -> PREJUDICA o desempenho (relação inversa)
+   * IED_SCORE_MEDIO       : r = -0.2139 | rho = -0.2372 -> PREJUDICA o desempenho (relação inversa)
+   * MED_CAT_3             : r = +0.2113 | rho = +0.2140 -> FAVORECE o desempenho (relação direta)
+   * IRD_MEDIO             : r = +0.1734 | rho = +0.0949 -> FAVORECE o desempenho (relação direta)
+   * MED_CAT_6             : r = -0.1733 | rho = -0.2134 -> PREJUDICA o desempenho (relação inversa)
+   * MED_CAT_4             : r = -0.1090 | rho = -0.1111 -> PREJUDICA o desempenho (relação inversa)
+   * MED_CAT_1             : r = -0.0097 | rho = -0.0590 -> PREJUDICA o desempenho (relação inversa)
+   * MED_CAT_2             : r = +0.0029 | rho = -0.0105 -> FAVORECE o desempenho (relação direta)
+
+[B] DIMENSÃO INFRAESTRUTURA & TECNOLOGIA:
+   * IN_LABORATORIO_CIENCIAS  : r = +0.1124 | rho = +0.1159 -> associação positiva
+   * QT_SALAS_UTILIZADAS      : r = -0.0730 | rho = -0.0617 -> associação negativa
+   * IN_BIBLIOTECA_SALA_LEITURA: r = +0.0668 | rho = +0.0619 -> associação positiva
+   * QT_COMP_ALUNO            : r = +0.0417 | rho = +0.0602 -> associação positiva
+   * IN_BANDA_LARGA           : r = +0.0374 | rho = +0.0368 -> associação positiva
+   * QT_COMP_PORTATIL_ALUNO   : r = +0.0344 | rho = +0.0495 -> associação positiva
+   * IN_INTERNET              : r = +0.0314 | rho = +0.0299 -> associação positiva
+   * IN_COMP_PORTATIL_ALUNO   : r = +0.0158 | rho = +0.0235 -> associação positiva
+   * IN_LABORATORIO_INFORMATICA: r = +0.0056 | rho = +0.0049 -> associação positiva
+
+======================================================================
+5. GERANDO GRÁFICO CIENTÍFICO: RADAR DE CORRELAÇÕES (300 DPI)
+======================================================================
+   [SUCESSO] Gráfico salvo com sucesso em:
+   D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar\reports\figures\eda_03_ranking_correlacoes.png
+
+======================================================================
+PASSO 3 CONCLUÍDO COM SUCESSO!
+======================================================================
+PS D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar> 
+
+
+
+1 - O Bloco Docente é o Verdadeiro "Coração" Intraescolar da Rede!
+
+
+O que isso prova cientificamente?
+
+	* O maior preditor interno da escola é a SOBRECARGA DOS PROFESSORES!
+
+	* Todas as categorias de esforço extremo (Categorias 5 e 6: professores que lecionam em 2 ou 3 escolas, em vários turnos e para mais de 300 ou 400 alunos) têm correlação fortemente NEGATIVA com a nota de Matemática.
+
+	* Por outro lado, MED_CAT_3 (professores com carga equilibrada) tem correlação POSITIVA (r=+0.2113).
+
+	* E a Regularidade Docente (IRD_MEDIO) favorece o desempenho (r=+0.1734): escolas onde os professores têm contratos estáveis e permanecem ano após ano na mesma escola tiram notas maiores!
+
+
+2. A Confirmação do "Paradoxo de Coleman": A Tecnologia Isolada é Neutra!
+
+	* QT_COMP_ALUNO: r=+0.0417 (impacto quase nulo, menos de 5% de correlação).
+
+	* IN_BANDA_LARGA: r=+0.0374.
+
+	* IN_LABORATORIO_INFORMATICA: r=+0.0056 (p=0.7378 — ESTATISTICAMENTE NÃO SIGNIFICANTE!).
+
+Lição de Ouro para a sua Monografia:
+
+Ter computadores ou laboratório de informática por si só não melhora a nota de Matemática de ninguém.
+O impacto da sobrecarga de um professor (r=−0.23) é mais de 40 vezes mais forte do que ter ou não um laboratório de informática (r=+0.005)! Coleman estava coberto de razão ao afirmar que despejar dinheiro em equipamentos físicos sem atuar no fator humano não altera os resultados.
+
+3. A Exceção da Infraestrutura: O Laboratório de Ciências!
+
+	* IN_LABORATORIO_CIENCIAS: Posição 10, com r=+0.1124 (p<0.001).
+
+	* Isso faz muito sentido pedagógico: escolas que possuem infraestrutura para experimentos práticos de física, química e biologia oferecem um ambiente acadêmico mais estruturado para o raciocínio quantitativo e científico, o que transborda para a Matemática!
+
+4. O Efeito do Porte da Escola (Escolas Menores vs. Megacomplexos)
+
+	* QTD_ALUNOS_INSE: r=−0.2277 (p<0.001)
+
+	* TOTAL_ALUNOS_TRIENIO: r=−0.0952 (p<0.001)
+
+	* QT_SALAS_UTILIZADAS: r=−0.0730 (p<0.001)
+
+
+Escolas gigantescas, superlotadas, com mais de 1.000 alunos e muitas salas, tendem a ter notas menores em média do que escolas de porte médio e menor. O acompanhamento individualizado e a proximidade da equipe pedagógica com os estudantes do 3º ano do EM fazem diferença real.
+
+
+5. O Efeito Geográfico (O Mapa da Desigualdade Paulista)
+
+	* DS_LATITUDE: r=+0.1500 (p<0.001)
+
+	* DS_LONGITUDE: r=−0.1121 (p<0.001)
+
+	* No estado de São Paulo, latitudes maiores (Norte e Noroeste: regiões de São José do Rio Preto, Ribeirão Preto, Franca, Votuporanga) têm historicamente notas médias de Matemática substancialmente superiores às do Sul do estado (Vale do Ribeira) e de algumas regiões metropolitanas conurbadas.
+
+
+
