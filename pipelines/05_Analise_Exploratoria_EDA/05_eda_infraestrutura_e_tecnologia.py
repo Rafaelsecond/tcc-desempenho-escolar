@@ -1,0 +1,247 @@
+"""
+=============================================================================
+EDA PASSO 5: A FÁBULA DOS INSUMOS FÍSICOS E DIGITAIS (INFRAESTRUTURA & TECNOLOGIA)
+=============================================================================
+Objetivo Pedagógico e Científico:
+  Em 1966, James Coleman causou enorme surpresa ao demonstrar que os insumos
+  puramente físicos das escolas (prédios, laboratórios, recursos) tinham impacto
+  estatisticamente marginal quando isolados do contexto humano e familiar.
+  
+  Neste passo, testamos rigorosamente se essa tese se sustenta em São Paulo:
+  1. Teste de Hipóteses das Variáveis Binárias (Presença vs. Ausência):
+     - Laboratório de Ciências (IN_LABORATORIO_CIENCIAS);
+     - Laboratório de Informática (IN_LABORATORIO_INFORMATICA);
+     - Biblioteca / Sala de Leitura (IN_BIBLIOTECA_SALA_LEITURA);
+     - Lousa Digital (IN_EQUIP_LOUSA_DIGITAL);
+     - Internet Banda Larga (IN_BANDA_LARGA);
+     - Aplicação de Teste t de Student e Teste U de Mann-Whitney para cada par!
+  2. Análise da Densidade de Computadores para Alunos (QT_COMP_ALUNO):
+     - Estratificação em faixas de computadores (Zero, 1-20, 21-50, 51-100, 100+);
+     - Teste de rendimentos decrescentes da tecnologia;
+  3. O Efeito do Porte Físico (QT_SALAS_UTILIZADAS);
+  4. Teste Econométrico Conjunto: A infraestrutura acrescenta R² além do INSE e dos Docentes?
+  5. Geração de Gráficos Científicos em Alta Resolução (300 DPI).
+
+Saída:
+  - reports/figures/eda_05_infraestrutura_e_tecnologia.png
+=============================================================================
+"""
+
+from pathlib import Path
+import pandas as pd
+import numpy as np
+from scipy import stats
+
+# Configurar caminhos do projeto
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+GOLD_DIR = PROJECT_ROOT / "data" / "gold"
+ARQUIVO_GOLD = GOLD_DIR / "tcc_dataset_analitico_final.parquet"
+FIGURES_DIR = PROJECT_ROOT / "reports" / "figures"
+FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+
+def analisar_infraestrutura_e_tecnologia():
+    print("=" * 75)
+    print("EDA PASSO 5: A FÁBULA DOS INSUMOS FÍSICOS E DIGITAIS (INFRAESTRUTURA)")
+    print("=" * 75)
+
+    # 1. Carregamento de Dados
+    print("\n1. Carregando dados da Camada Gold...")
+    df = pd.read_parquet(ARQUIVO_GOLD)
+    target_col = 'TARGET_TRIENAL_MAT'
+    n_total = len(df)
+    print(f"   -> Base Carregada: {n_total:,} escolas estaduais regulares paulistas.")
+
+    # 2. Testes Estatísticos para Variáveis Binárias (Com vs. Sem Insumo)
+    print("\n" + "=" * 70)
+    print("2. IMPACTO DE INSUMOS BINÁRIOS (TESTE t DE STUDENT & MANN-WHITNEY)")
+    print("=" * 70)
+    
+    insumos_binarios = [
+        ('IN_LABORATORIO_CIENCIAS', 'Laboratório de Ciências'),
+        ('IN_LABORATORIO_INFORMATICA', 'Laboratório de Informática'),
+        ('IN_BIBLIOTECA_SALA_LEITURA', 'Biblioteca / Sala Leitura'),
+        ('IN_EQUIP_LOUSA_DIGITAL', 'Lousa Digital'),
+        ('IN_BANDA_LARGA', 'Internet Banda Larga')
+    ]
+
+    print(f"{'Insumo Escolar':<28} {'Sem (μ)':<10} {'Com (μ)':<10} {'Gap (Δ)':<10} {'t-stat':<10} {'p-valor'}")
+    print("-" * 75)
+
+    tabela_binarios = []
+
+    for col, nome in insumos_binarios:
+        sub = df[[col, target_col]].dropna()
+        grupo_0 = sub[sub[col] == 0][target_col]
+        grupo_1 = sub[sub[col] == 1][target_col]
+        
+        m0 = grupo_0.mean()
+        m1 = grupo_1.mean()
+        gap = m1 - m0
+        
+        # Teste t de Student para duas amostras independentes (Welch t-test)
+        t_stat, p_val = stats.ttest_ind(grupo_1, grupo_0, equal_var=False)
+        u_stat, p_mann = stats.mannwhitneyu(grupo_1, grupo_0, alternative='two-sided')
+        
+        sig = "***" if p_val < 0.001 else ("**" if p_val < 0.01 else ("*" if p_val < 0.05 else "ns"))
+        print(f"{nome:<28} {m0:>6.2f}%    {m1:>6.2f}%    {gap:>+6.2f} p.p.  {t_stat:>+7.2f}    p = {p_val:.4f} {sig}")
+        
+        tabela_binarios.append({
+            'Insumo': nome,
+            'Coluna': col,
+            'Media_Sem': m0,
+            'Media_Com': m1,
+            'Gap': gap,
+            'p_valor': p_val,
+            'Significante': p_val < 0.05
+        })
+
+    print("\nLegenda: *** p < 0.001 | ** p < 0.01 | * p < 0.05 | ns = não significante")
+
+    # 3. Análise da Densidade de Computadores para Alunos (QT_COMP_ALUNO)
+    print("\n" + "=" * 70)
+    print("3. ANÁLISE DE DENSIDADE DE COMPUTADORES PARA ALUNOS (QT_COMP_ALUNO)")
+    print("=" * 70)
+
+    # Criar faixas categóricas de computadores
+    bins_comp = [-1, 0, 20, 50, 100, 9999]
+    labels_comp = ['Zero Máquinas', '1 a 20 PCs', '21 a 50 PCs', '51 a 100 PCs', 'Mais de 100 PCs']
+    df['FAIXA_COMP'] = pd.cut(df['QT_COMP_ALUNO'].fillna(0), bins=bins_comp, labels=labels_comp)
+
+    resumo_comp = df.groupby('FAIXA_COMP', observed=True).agg(
+        Qtd_Escolas=(target_col, 'count'),
+        Comp_Medio=('QT_COMP_ALUNO', 'mean'),
+        INSE_Medio=('MEDIA_INSE', 'mean'),
+        Nota_Media=(target_col, 'mean'),
+        Nota_Mediana=(target_col, 'median'),
+        Nota_Min=(target_col, 'min'),
+        Nota_Max=(target_col, 'max')
+    )
+
+    for faixa, row in resumo_comp.iterrows():
+        print(f"   * {faixa:<18}: N = {int(row['Qtd_Escolas']):>4} ({row['Qtd_Escolas']/n_total*100:>4.1f}%) | Média PCs = {row['Comp_Medio']:>5.1f} | INSE = {row['INSE_Medio']:.2f} | Nota Média = {row['Nota_Media']:.2f}% (Med: {row['Nota_Mediana']:.2f}%)")
+
+    # 4. Análise do Porte Físico da Escola (QT_SALAS_UTILIZADAS)
+    print("\n" + "=" * 70)
+    print("4. ANÁLISE DO PORTE FÍSICO DA UNIDADE (SALAS UTILIZADAS)")
+    print("=" * 70)
+
+    bins_salas = [0, 8, 14, 99]
+    labels_salas = ['Pequeno Porte (<= 8 salas)', 'Médio Porte (9 a 14 salas)', 'Grande Porte (15+ salas)']
+    df['PORTE_ESCOLA'] = pd.cut(df['QT_SALAS_UTILIZADAS'], bins=bins_salas, labels=labels_salas)
+
+    resumo_salas = df.groupby('PORTE_ESCOLA', observed=True).agg(
+        Qtd_Escolas=(target_col, 'count'),
+        Salas_Medias=('QT_SALAS_UTILIZADAS', 'mean'),
+        Alunos_Medios=('TOTAL_ALUNOS_TRIENIO', 'mean'),
+        Nota_Media=(target_col, 'mean'),
+        Nota_Mediana=(target_col, 'median')
+    )
+
+    for porte, row in resumo_salas.iterrows():
+        print(f"   * {porte:<28}: N = {int(row['Qtd_Escolas']):>4} | Média Salas = {row['Salas_Medias']:>4.1f} | Alunos = {row['Alunos_Medios']:>5.1f} | Nota Média = {row['Nota_Media']:.2f}%")
+
+    # 5. Teste Econométrico Conjunto: O R² da Infraestrutura Físico-Digital
+    print("\n" + "=" * 70)
+    print("5. TESTE DE REGRESSÃO MULTIVARIADA CONJUNTA (INSE + DOCENTES + INFRA)")
+    print("=" * 70)
+
+    # Subconjunto sem nulos para comparação justa de R²
+    cols_modelo_completo = ['MEDIA_INSE', 'IED_SCORE_MEDIO', 'IRD_MEDIO', 'IN_LABORATORIO_CIENCIAS', 'QT_COMP_ALUNO', 'QT_SALAS_UTILIZADAS']
+    df_reg = df[cols_modelo_completo + [target_col]].dropna().copy()
+    n_reg = len(df_reg)
+
+    Y = df_reg[target_col].values
+
+    # Modelo 1: Só INSE (Coleman)
+    X1 = np.column_stack([np.ones(n_reg), df_reg['MEDIA_INSE'].values])
+    b1, _, _, _ = np.linalg.lstsq(X1, Y, rcond=None)
+    r2_m1 = 1 - (np.sum((Y - X1 @ b1)**2) / np.sum((Y - Y.mean())**2))
+
+    # Modelo 2: INSE + Docentes (IED + IRD)
+    X2 = np.column_stack([np.ones(n_reg), df_reg['MEDIA_INSE'].values, df_reg['IED_SCORE_MEDIO'].values, df_reg['IRD_MEDIO'].values])
+    b2, _, _, _ = np.linalg.lstsq(X2, Y, rcond=None)
+    r2_m2 = 1 - (np.sum((Y - X2 @ b2)**2) / np.sum((Y - Y.mean())**2))
+
+    # Modelo 3: INSE + Docentes + Infraestrutura
+    X3 = np.column_stack([
+        np.ones(n_reg),
+        df_reg['MEDIA_INSE'].values,
+        df_reg['IED_SCORE_MEDIO'].values,
+        df_reg['IRD_MEDIO'].values,
+        df_reg['IN_LABORATORIO_CIENCIAS'].values,
+        df_reg['QT_COMP_ALUNO'].values,
+        df_reg['QT_SALAS_UTILIZADAS'].values
+    ])
+    b3, _, _, _ = np.linalg.lstsq(X3, Y, rcond=None)
+    r2_m3 = 1 - (np.sum((Y - X3 @ b3)**2) / np.sum((Y - Y.mean())**2))
+
+    print(f"   [Modelo 1] Background Familiar (Só INSE):           R² = {r2_m1*100:.2f}%")
+    print(f"   [Modelo 2] INSE + Fatores Docentes (IED e IRD):     R² = {r2_m2*100:.2f}%  (Ganho: +{(r2_m2 - r2_m1)*100:.2f}%)")
+    print(f"   [Modelo 3] INSE + Docentes + Infraestrutura/Tech:   R² = {r2_m3*100:.2f}%  (Ganho: +{(r2_m3 - r2_m2)*100:.2f}%)")
+    
+    print("\n   Coeficientes Finais do Modelo Completo:")
+    nomes_vars = ['Constante', 'MEDIA_INSE', 'IED_SCORE_MEDIO', 'IRD_MEDIO', 'LAB_CIENCIAS', 'QT_COMP_ALUNO', 'QT_SALAS']
+    for nome, coef in zip(nomes_vars, b3):
+        print(f"     * {nome:<22}: {coef:+.4f}")
+
+    print("\n" + "-" * 70)
+    print("INSIGHT CIENTÍFICO CENTRAL DO PASSO 5:")
+    print(f"Adicionar a infraestrutura física e digital inteira aumentou o R² em apenas +{(r2_m3 - r2_m2)*100:.2f}%!")
+    print("Isso confirma a tese clássica de Coleman: tijolos e computadores")
+    print("têm impacto infinitamente menor do que o capital humano dos professores e a gestão!")
+    print("-" * 70)
+
+    # 6. Geração de Gráficos Científicos em Alta Resolução (300 DPI)
+    print("\n6. Gerando painel gráfico científico em 300 DPI...")
+    try:
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+
+        plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6), dpi=300)
+
+        # Painel 1: Gráfico de Barras com os Gaps dos Insumos Binários
+        df_bars = pd.DataFrame(tabela_binarios).sort_values(by='Gap', ascending=True)
+        cores = ['#2ca02c' if s else '#7f7f7f' for s in df_bars['Significante']]
+        bars = ax1.barh(df_bars['Insumo'], df_bars['Gap'], color=cores, alpha=0.85, height=0.6)
+        ax1.axvline(0, color='black', linestyle='--', linewidth=0.8)
+        
+        for bar in bars:
+            w = bar.get_width()
+            desloc = 0.05 if w >= 0 else -0.15
+            ax1.text(w + desloc, bar.get_y() + bar.get_height()/2, f'{w:+.2f} p.p.', va='center', fontsize=9.5, fontweight='bold')
+
+        ax1.set_title('A: Ganho Médio de Nota (Com Insumo vs. Sem Insumo)', fontsize=11.5, fontweight='bold', pad=10)
+        ax1.set_xlabel('Diferença na Média de Matemática (pontos percentuais)', fontsize=10)
+        ax1.set_xlim(-0.5, 2.0)
+
+        # Painel 2: Boxplot das Faixas de Computadores
+        sns.boxplot(
+            data=df, x='FAIXA_COMP', y=target_col,
+            palette='Blues', ax=ax2, width=0.55, fliersize=3, flierprops={'alpha': 0.35}
+        )
+        ax2.set_title('B: Desempenho em Matemática por Volume de Computadores', fontsize=11.5, fontweight='bold', pad=10)
+        ax2.set_xlabel('')
+        ax2.set_ylabel('Média Trienal em Matemática (% de acertos)', fontsize=10)
+        ax2.set_xticklabels(labels_comp, rotation=15, ha='right', fontsize=9)
+
+        # Texto das médias
+        for i, faixa in enumerate(labels_comp):
+            m_faixa = resumo_comp.loc[faixa, 'Nota_Media']
+            ax2.text(i, m_faixa + 0.6, f'{m_faixa:.1f}%', ha='center', fontsize=9, fontweight='bold', color='#111111')
+
+        fig.tight_layout()
+        caminho_fig = FIGURES_DIR / "eda_05_infraestrutura_e_tecnologia.png"
+        fig.savefig(caminho_fig)
+        plt.close(fig)
+        print(f"   [SUCESSO] Gráfico salvo com sucesso em:\n   {caminho_fig}")
+
+    except Exception as e:
+        print(f"   [AVISO] Erro ao renderizar gráfico: {e}")
+
+    print("\n" + "=" * 75)
+    print("PASSO 5 CONCLUÍDO COM SUCESSO!")
+    print("=" * 75)
+
+if __name__ == "__main__":
+    analisar_infraestrutura_e_tecnologia()

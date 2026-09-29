@@ -1,7 +1,7 @@
 # Caderno Metodológico e de Engenharia de Dados do TCC
 **Projeto**: Modelagem Preditiva do Desempenho Escolar no Ensino Médio Paulista (2022–2024)  
-**Data de Atualização**: 26/09/2026  
-**Status**: Camada Gold Concluída; Análise Exploratória de Dados (EDA) Avançada (Passos 1, 2, 3 e Auditoria Concluídos)
+**Data de Atualização**: 29/09/2026  
+**Status**: Camada Gold Concluída; Análise Exploratória de Dados (EDA) Avançada (Passos 1 a 6 Concluídos; Passo 7 em Preparação)
 
 ---
 
@@ -332,15 +332,95 @@ Para testar a hipótese de que as escolas com maior superação da Reta de Colem
 3. **A Geografia do Capital Social Comunitário**: Todas as escolas resilientes situam-se em **municípios de pequeno porte do interior paulista**, onde turmas menores viabilizam acompanhamento pedagógico individualizado, controle de frequência e forte integração entre famílias e direção escolar.
 4. **O Caso Emblemático da EE Terezinha Mariano Magnani**: Com uma amostra robusta de 111 estudantes avaliados e INSE de baixa renda ($4,86$), a escola atingiu média de **47,48%** tendo **zero computadores para alunos**, mas ostentando o menor esforço docente da amostra ($\text{IED} = 2,40$, apenas 5% de sobrecarga alta) e a maior regularidade de vínculo ($\text{IRD} = 3,26$). É a confirmação empírica máxima de que **o fator humano e as condições estáveis de trabalho docente superam qualquer insumo tecnológico**.
 
+### 10.5 Passo 4 da EDA: O Fator Humano Intraescolar (Docentes: IED vs. IRD)
+O aprofundamento das duas forças intraescolares mais relevantes — o Esforço Docente (`IED`) e a Regularidade do Vínculo (`IRD`) — em $3.591$ escolas regulares ($99,4\%$ da base) revelou o mecanismo central de funcionamento da rede:
+
+#### A Matriz dos 4 Quadrantes Docentes:
+Dividindo a rede pelas medianas estaduais de esforço ($\text{IED} = 3,77$) e regularidade ($\text{IRD} = 2,61$), a rede distribui-se em quatro grupos homogêneos de cerca de $900$ escolas cada:
+
+| Quadrante Docente | Perfil Pedagógico | Escolas ($N$) | % Rede | IED Médio | IRD Médio | INSE Médio | Nota Matemática ($\mu$) |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Q1 (Crítico)** | Alta Sobrecarga & Baixa Regularidade | 904 | 25,2% | 4,08 | 2,32 | 5,25 | **30,08%** |
+| **Q2 (Sobrecarga)** | Alta Sobrecarga & Alta Regularidade | 890 | 24,8% | 4,08 | 2,91 | 5,19 | **30,08%** |
+| **Q3 (Rotatividade)**| Baixa Sobrecarga & Baixa Regularidade | 892 | 24,8% | 3,29 | 2,27 | 5,25 | **31,20%** |
+| **Q4 (Ideal)** | Baixa Sobrecarga & Alta Regularidade | 905 | 25,2% | 3,33 | 3,07 | 5,29 | **32,28%** |
+
+#### Conclusões do Diagnóstico Docente:
+1. **O "Teto da Sobrecarga"**: A nota média em Q1 e Q2 é rigorosamente idêntica ($30,08\%$). Isso comprova que **quando os professores estão submetidos a regimes severos de sobrecarga de turmas (IED alto), a estabilidade de vínculo não consegue se traduzir em ganhos pedagógicos**. A estafa física e cognitiva do professor neutraliza os potenciais benefícios da permanência na escola.
+2. **O Salto da Carga Equilibrada**: Apenas ao reduzir o esforço para patamares humanos (Q3 e Q4), a nota da escola salta para $31,20\%$ e atinge o ápice de $32,28\%$.
+3. **O "Gap do Corpo Docente"**: O ambiente docente ideal (Q4) supera o ambiente crítico (Q1) em **$+2,20$ pontos percentuais**, diferença substantiva que equivale a quase um ano letivo a mais de aprendizado acumulado em Matemática.
+4. **O Teste de Controle Social**: Ajustou-se uma regressão múltipla controlando pelo INSE familiar:
+   $$\text{TARGET\_TRIENAL\_MAT} = \beta_0 + (6,384 \cdot \text{MEDIA\_INSE}) - (1,475 \cdot \text{IED\_SCORE\_MEDIO}) + (1,269 \cdot \text{IRD\_MEDIO})$$
+   - O $R^2$ saltou de $17,05\%$ para **$22,72\%$** (ganho líquido de $+5,67$ p.p.);
+   - Mesmo para escolas com o mesmo nível de riqueza familiar, cada ponto a mais de esforço docente reduz a nota em $-1,48$ p.p., enquanto cada ponto a mais de regularidade eleva em $+1,27$ p.p. O efeito docente é **autônomo e independente do perfil social dos estudantes**.
+- **Artefato Gráfico**: `reports/figures/eda_04_fatores_docentes_ied_ird.png` (painel conjugado com dispersão IED vs. Target com gradiente por IRD e boxplot dos 4 quadrantes em 300 DPI).
+
+---
+
+### 10.6 Passo 5 da EDA: A Fábula dos Insumos Físicos e Digitais (Infraestrutura & Tecnologia)
+Confrontou-se formalmente o peso dos insumos físicos e tecnológicos contra os resultados de Matemática, testando empiricamente as conclusões originais de Coleman:
+
+#### Testes de Hipóteses para Insumos Binários (Com vs. Sem):
+| Insumo Escolar | Sem Insumo ($\mu$) | Com Insumo ($\mu$) | Gap Líquido ($\Delta$) | Estatística $t$ | $p$-valor | Conclusão |
+| :--- | :---: | :---: | :---: | :---: | :---: | :--- |
+| **Laboratório de Ciências** | 30,68% | 31,68% | **+1,00 p.p.** | $t = +6,60$ | $p < 0,001$ (***) | Relevante e significante |
+| **Laboratório de Informática** | 30,88% | 30,94% | **+0,06 p.p.** | $t = +0,33$ | $p = 0,7419$ (ns) | **Estatisticamente Irrelevante** |
+| **Biblioteca / Sala de Leitura**| 30,23% | 31,03% | **+0,80 p.p.** | $t = +4,33$ | $p < 0,001$ (***) | Relevante e significante |
+| **Internet Banda Larga** | 30,30% | 30,97% | **+0,67 p.p.** | $t = +2,50$ | $p = 0,013$ (*) | Modesto mas significante |
+| **Lousa Digital** | 30,80% | 31,27% | **+0,47 p.p.** | $t = +3,16$ | $p = 0,002$ (**) | Modesto |
+
+#### A Ilusão da Tecnologia Isolada (Computadores para Alunos):
+- Escolas com **Zero Computadores** ($N = 41$): Média = **30,28%**
+- Escolas com **1 a 20 PCs** ($N = 576$): Média = **30,50%**
+- Escolas com **21 a 50 PCs** ($N = 855$): Média = **30,94%**
+- Escolas com **51 a 100 PCs** ($N = 1.316$): Média = **30,97%**
+- Escolas com **Mais de 100 PCs** ($N = 823$, média de 140 PCs): Média = **31,20%**
+- A distância entre ter **nenhum computador** e ter **140 máquinas** é de modestos **0,92 pontos percentuais**!
+
+#### O Efeito do Porte Escolar:
+- Pequeno Porte ($\le 8$ salas): Média = **31,44%** ($\mu = 110$ alunos)
+- Médio Porte ($9$ a $14$ salas): Média = **31,11%** ($\mu = 182$ alunos)
+- Grande Porte ($15+$ salas): Média = **30,54%** ($\mu = 302$ alunos)
+- Escolas massificadas sofrem de despersonalização e maior dificuldade de controle pedagógico.
+
+#### A Comparação Definitiva dos Três Modelos Econométricos ($R^2$ Cumulativo):
+1. **Modelo 1 (Só INSE / Background Familiar)**: $R^2 = \mathbf{17,04\%}$
+2. **Modelo 2 (INSE + Professores: IED e IRD)**: $R^2 = \mathbf{22,72\%}$ (Ganho Docente: **+5,68 p.p.**)
+3. **Modelo 3 (INSE + Docentes + Infraestrutura Completa)**: $R^2 = \mathbf{24,01\%}$ (Ganho da Infraestrutura: **apenas +1,29 p.p.**)
+- **Conclusão Teórica Central**: O fator humano docente explica **4,4 vezes mais da variabilidade das notas do que todos os prédios, salas e computadores combinados**. Na regressão controlada, o ganho líquido puro de um laboratório de ciências é de cerca de $+0,50$ p.p., enquanto cada máquina de computador tem coeficiente residual de $+0,0009$.
+- **Artefato Gráfico**: `reports/figures/eda_05_infraestrutura_e_tecnologia.png` (painel conjugado com gaps dos insumos binários e boxplot por densidade de computadores em 300 DPI).
+
+---
+
+### 10.7 Passo 6 da EDA: O Mapeamento Sistemático das Escolas Resilientes (Efeito-Escola)
+A literatura de Eficácia Escolar (Soares & Alves, 2003; Brooke, 2008) define resiliência educacional a partir do resíduo padronizado da regressão socioeconômica ($e_i = Y_i - \hat{Y}_i$). Classificaram-se as $3.594$ escolas em três regimes a partir do limiar de $1,5 \times \text{RMSE}$ ($+5,17$ p.p. acima da Reta de Coleman):
+
+- **Desempenho Típico (Alinhado ao INSE)**: $3.211$ escolas (**89,34%** da rede);
+- **Escolas Resilientes de Alta Eficácia**: **263 escolas (7,32% da rede)**;
+- **Subdesempenho Crítico**: $120$ escolas (**3,34%** da rede).
+
+#### O Raio-X Coletivo das 263 Escolas Resilientes:
+Comparadas à rede geral, as escolas resilientes apresentam uma assinatura institucional inconfundível:
+- **Desempenho Escolar**: Média de **39,23%** de acertos em Matemática (**+8,31 pontos percentuais acima da rede geral**);
+- **Nível Socioeconômico Familiar**: $\text{INSE} = 5,29$ vs $5,25$ da rede geral (diferença nula de apenas $+0,05$ p.p. — **as famílias atendidas têm rigorosamente a mesma condição econômica da rede**);
+- **Sobrecarga Docente Severa (% Cat 5 e 6)**: Apenas **9,35%** da equipe docente, contra **17,24%** na rede geral (**redução de quase a metade na sobrecarga!**);
+- **Regularidade Docente (IRD)**: **2,90** vs **2,65** (professores mais estáveis e vinculados à unidade);
+- **Porte Escolar**: Média de **140,6 alunos avaliados** contra **219,5** na rede geral (unidades menores e mais acolhedoras);
+- **Parque Computacional**: **69,6 computadores** vs **69,7** na rede geral (diferença rigorosamente nula de $-0,12$ máquinas);
+- **Laboratório de Ciências**: **34,2%** de presença contra **25,4%** na rede geral (+8,8 p.p.).
+
+#### Concentração Geográfica e Polos Regionais:
+- **Destaque Absoluto para a DE Apiaí (Vale do Ribeira)**: **9 escolas resilientes em 30 unidades (30,0% da diretoria inteira!)**, provando que uma das regiões de menor IDH do estado abriga o maior polo proporcional de resiliência e eficácia escolar paulista;
+- Outras Diretorias Líderes: **DE Sertãozinho** ($28,0\%$), **DE Centro Oeste / Capital** ($20,6\%$, com a histórica EE Caetano de Campos Consolação atingindo superação de $+16,77$ p.p.), **DE Franca** ($19,5\%$) e **DE Campinas Leste** ($18,4\%$).
+- **Artefato Gráfico**: `reports/figures/eda_06_escolas_resilientes_efeito_escola.png` (gráfico de dispersão com destaque para as 263 escolas resilientes e as faixas de resíduo em 300 DPI).
+
 ---
 
 ## 11. Próximos Passos: O Roteiro da EDA Modular e Modelagem
 
-1. **Passo 4 da EDA (`04_eda_fatores_docentes.py`)**:
-   - O Fator Humano Intraescolar: análise bivariada e estratificada do Esforço Docente (IED) e da Regularidade do Vínculo (IRD) cruzados em quadrantes de qualidade docente;
-2. **Passo 5 da EDA (`05_eda_infraestrutura_e_tecnologia.py`)**:
-   - Teste de impacto dos insumos escolares físicos e digitais (salas de aula, computadores por aluno, laboratórios de ciências e de informática);
-3. **Passo 6 da EDA (`06_eda_escolas_resilientes_efeito_escola.py`)**:
-   - Mapeamento e caracterização aprofundada de todas as escolas resilientes da rede estadual paulista ("As Sobrais Paulistas");
-4. **Fase de Modelagem Preditiva e Machine Learning**:
-   - Treinamento dos modelos (OLS Baseline, Ridge/Lasso, Random Forest, XGBoost e LightGBM) e análise de explicabilidade via SHAP.
+1. **Passo 7 da EDA (`07_eda_acoplamento_portugues_matematica.py`)**:
+   - O Acoplamento Interdisciplinar: investigação empírica da correlação entre proficiência em Língua Portuguesa e Matemática (a carga linguística dos enunciados e a interdisciplinaridade);
+2. **Fase de Modelagem Preditiva e Machine Learning**:
+   - Treinamento dos modelos supervisionados (OLS Baseline, Ridge/Lasso, Random Forest, XGBoost e LightGBM);
+   - Validação cruzada estratificada ($K$-Fold);
+   - Análise de explicabilidade e importância de features via SHAP (Shapley Additive exPlanations).

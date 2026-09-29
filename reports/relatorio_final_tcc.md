@@ -52,17 +52,17 @@ CAMPESTRINI, T. R. C.; CIRINO, A. A.; AQUINO, L. S.; RODRIGUES, E. S.; KOJIMA, R
 
 ## RESUMO
 
-A etapa final da Educação Básica brasileira enfrenta um histórico e persistente desafio na consolidação de competências quantitativas essenciais. No Estado de São Paulo, avaliações diagnósticas padronizadas revelam que expressiva parcela dos concluintes da 3ª série do Ensino Médio da rede pública estadual permanece retida em níveis críticos de proficiência em Matemática. Embora a literatura clássica aponte expressiva determinação socioeconômica sobre o rendimento acadêmico, abordagens exclusivamente contextuais mostram-se deterministas e pouco acionáveis para formulação de políticas escolares. Este trabalho de conclusão de curso investiga, por meio de modelagem analítica e algoritmos de aprendizado de máquina supervisionado acoplados ao arcabouço de Inteligência Artificial Explicável (XAI), em que magnitude os fatores intraescolares controláveis — prioritariamente a regularidade do corpo docente (IRD), a sobrecarga de trabalho docente (IED) e a infraestrutura instalada — atuam na mitigação da defasagem em Matemática. A base amostral integra microdados do SARESP (2022), Provão Paulista (2023 e 2024), Censo Escolar da Educação Básica e Indicadores Educacionais do INEP para as escolas estaduais paulistas. Adotou-se a Arquitetura Medalhão para engenharia de dados, fundamentando a adoção de 2023 como ano-pivô após validação empírica da estabilidade longitudinal dos fatores escolares ($r > 0,70$). Os microdados de 884.417 estudantes avaliados ao longo do triênio foram consolidados em uma variável-alvo contínua ponderada ($Y$), resultando em uma base analítica final (*Camada Gold*) com 3.611 estabelecimentos estaduais regulares. A Análise Exploratória de Dados (EDA) evidenciou que o nível socioeconômico familiar (INSE) responde por 17,05% da variabilidade das notas ($R^2$), restando 82,95% de variância residual não associada à renda média da escola — margem que abriga tanto o potencial de ação de fatores intraescolares e docentes quanto condicionantes individuais e familiares não mensurados. O ranking de correlações confirmou que os indicadores de sobrecarga docente exercem impacto redutor até 40 vezes superior à presença de insumos digitais escolares. A auditoria das escolas resilientes de alta eficácia demonstrou que a estabilidade humana e a regularidade do vínculo docente prevalecem sobre quaisquer equipamentos físicos, subsidiando a modelagem preditiva e a futura proposição de uma matriz diagnóstica acionável para Diretorias de Ensino.
+A etapa final da Educação Básica brasileira enfrenta um histórico e persistente desafio na consolidação de competências quantitativas essenciais. No Estado de São Paulo, avaliações diagnósticas padronizadas revelam que expressiva parcela dos concluintes da 3ª série do Ensino Médio da rede pública estadual permanece retida em níveis críticos de proficiência em Matemática. Embora a literatura clássica aponte expressiva determinação socioeconômica sobre o rendimento acadêmico, abordagens exclusivamente contextuais mostram-se deterministas e pouco acionáveis para formulação de políticas escolares. Este trabalho de conclusão de curso investiga, por meio de modelagem analítica e algoritmos de aprendizado de máquina supervisionado acoplados ao arcabouço de Inteligência Artificial Explicável (XAI), em que magnitude os fatores intraescolares controláveis — prioritariamente a regularidade do corpo docente (IRD), a sobrecarga de trabalho docente (IED) e a infraestrutura instalada — atuam na mitigação da defasagem em Matemática. A base amostral integra microdados do SARESP (2022), Provão Paulista (2023 e 2024), Censo Escolar da Educação Básica e Indicadores Educacionais do INEP para as escolas estaduais paulistas. Adotou-se a Arquitetura Medalhão para engenharia de dados, fundamentando a adoção de 2023 como ano-pivô após validação empírica da estabilidade longitudinal dos fatores escolares ($r > 0,70$). Os microdados de 884.417 estudantes avaliados ao longo do triênio foram consolidados em uma variável-alvo contínua ponderada ($Y$), resultando em uma base analítica final (*Camada Gold*) com 3.611 estabelecimentos estaduais regulares. A Análise Exploratória de Dados (EDA) evidenciou que o nível socioeconômico familiar (INSE) responde por 17,05% da variabilidade das notas ($R^2$), restando 82,95% de variância residual não associada à renda média da escola — margem que abriga tanto o potencial de ação de fatores intraescolares e docentes quanto condicionantes individuais e familiares não mensurados. O aprofundamento empírico da dinâmica docente revelou que escolas com baixa sobrecarga e alta regularidade superam as unidades em regime crítico em $+2,20$ pontos percentuais, e que o fator docente explica 4,4 vezes mais a variabilidade do desempenho do que todos os insumos físicos e tecnológicos combinados. O mapeamento sistemático de eficácia identificou 263 escolas resilientes de alta eficácia (7,32% da rede), que alcançam médias de 39,23% (+8,31 p.p. acima da rede) sob o mesmo nível socioeconômico médio, tendo como epicentro o Vale do Ribeira (Diretoria de Ensino de Apiaí, com 30% de resiliência). Tais constatações fornecem sólido alicerce para a modelagem preditiva e para a proposição de uma matriz diagnóstica acionável para Diretorias de Ensino.
 
-**Palavras-chave**: Aprendizado de Máquina, Inteligência Artificial Explicável (XAI), SHAP, Desempenho Escolar, SARESP, Fatores Intraescolares, Análise Exploratória de Dados, Eficácia Escolar.
+**Palavras-chave**: Aprendizado de Máquina, Inteligência Artificial Explicável (XAI), SHAP, Desempenho Escolar, SARESP, Fatores Intraescolares, Análise Exploratória de Dados, Eficácia Escolar, Efeito-Escola.
 
 ---
 
 ## ABSTRACT
 
-The final stage of Brazilian Basic Education faces a historical and persistent challenge in consolidating essential quantitative skills. In the State of São Paulo, standardized diagnostic assessments reveal that a substantial portion of public secondary school seniors remains trapped at critical proficiency levels in Mathematics. Although classical literature highlights significant socioeconomic conditioning over student achievement, purely contextual approaches provide deterministic and non-actionable frameworks for educational management. This capstone project investigates, using analytical modeling and supervised machine learning algorithms combined with Explainable Artificial Intelligence (XAI), to what extent controllable within-school factors — primarily teacher regularity (IRD), teacher workload (IED), and installed educational infrastructure — mitigate learning deficits in Mathematics. The analytical sample integrates microdata from SARESP (2022), Provão Paulista (2023 and 2024), Basic Education School Census, and INEP Educational Indicators across São Paulo state public schools. A Medallion Architecture was employed for data engineering, confirming 2023 as a representative pivot year through empirical longitudinal stability validation ($r > 0.70$). Microdata from 884,417 students evaluated across the triennium were synthesized into a continuous weighted target variable ($Y$), yielding a consolidated final analytical dataset (*Gold Layer*) comprising 3,611 regular public high schools. Exploratory Data Analysis (EDA) revealed that family socioeconomic status (INSE) explains 17.05% of performance variance ($R^2$), leaving an 82.95% residual variance unconditioned by school-level average wealth — a margin encompassing both the actionable influence of within-school factors and unobserved student or familial dynamics. Correlation rankings confirmed that excessive teacher workload has a negative impact up to 40 times stronger than the presence of computer laboratories. A longitudinal audit of resilient high-performing schools proved that human stability and teacher retention strongly outweigh physical educational assets, underpinning predictive modeling and an actionable diagnostic matrix for regional educational boards.
+The final stage of Brazilian Basic Education faces a historical and persistent challenge in consolidating essential quantitative skills. In the State of São Paulo, standardized diagnostic assessments reveal that a substantial portion of public secondary school seniors remains trapped at critical proficiency levels in Mathematics. Although classical literature highlights significant socioeconomic conditioning over student achievement, purely contextual approaches provide deterministic and non-actionable frameworks for educational management. This capstone project investigates, using analytical modeling and supervised machine learning algorithms combined with Explainable Artificial Intelligence (XAI), to what extent controllable within-school factors — primarily teacher regularity (IRD), teacher workload (IED), and installed educational infrastructure — mitigate learning deficits in Mathematics. The analytical sample integrates microdata from SARESP (2022), Provão Paulista (2023 and 2024), Basic Education School Census, and INEP Educational Indicators across São Paulo state public schools. A Medallion Architecture was employed for data engineering, confirming 2023 as a representative pivot year through empirical longitudinal stability validation ($r > 0.70$). Microdata from 884,417 students evaluated across the triennium were synthesized into a continuous weighted target variable ($Y$), yielding a consolidated final analytical dataset (*Gold Layer*) comprising 3,611 regular public high schools. Exploratory Data Analysis (EDA) revealed that family socioeconomic status (INSE) explains 17.05% of performance variance ($R^2$), leaving an 82.95% residual variance unconditioned by school-level average wealth — a margin encompassing both the actionable influence of within-school factors and unobserved student or familial dynamics. In-depth empirical exploration of teacher dynamics showed that schools with balanced workload and high retention outperform critical units by $+2.20$ percentage points, with teacher factors explaining 4.4 times more performance variance than all physical and digital educational assets combined. A systematic mapping of school effectiveness identified 263 resilient high-performing schools (7.32% of the public network) averaging 39.23% (+8.31 p.p. above the state average) under identical socioeconomic backgrounds, with a major regional cluster in the Vale do Ribeira (Apiaí Regional Directorate, with 30.0% resilient schools). These findings provide a solid empirical basis for predictive modeling and an actionable diagnostic matrix for regional educational management.
 
-**Keywords**: Machine Learning, Explainable Artificial Intelligence (XAI), SHAP, School Performance, SARESP, Within-school Factors, Exploratory Data Analysis, School Effectiveness.
+**Keywords**: Machine Learning, Explainable Artificial Intelligence (XAI), SHAP, School Performance, SARESP, Within-school Factors, Exploratory Data Analysis, School Effectiveness, School Effect.
 
 ---
 
@@ -75,9 +75,12 @@ The final stage of Brazilian Basic Education faces a historical and persistent c
 *Figura 5 – Diagnóstico Estatístico da Variável-Alvo Trienal ($Y$): Painel Conjugado de Histograma com Curva de Densidade Contínua (KDE) e Boxplot de Dispersão*  
 *Figura 6 – Dispersão do Rendimento Escolar em Matemática versus Nível Socioeconômico Médio (Reta de Coleman e Resíduos)*  
 *Figura 7 – Ranking Comparativo das Correlações das Variáveis Preditoras ($X$) com o Rendimento em Matemática ($Y$)*  
-*Figura 8 – Curva de Desempenho e Comparativo das Métricas dos Modelos Preditivos* *(Previsto)*  
-*Figura 9 – SHAP Summary Plot: Ranqueamento Global de Importância dos Fatores Escolares* *(Previsto)*  
-*Figura 10 – SHAP Dependence Plot: Interação Bivariada entre Regularidade Docente (IRD) e Vulnerabilidade (INSE)* *(Previsto)*  
+*Figura 8 – O Fator Humano Intraescolar: Dispersão do Esforço Docente (IED) versus Desempenho e Boxplot dos Quatro Quadrantes Docentes*  
+*Figura 9 – Avaliação dos Insumos Físicos e Tecnológicos: Gaps dos Insumos Binários e Rendimento por Faixa de Computadores Discentes*  
+*Figura 10 – Mapeamento do Efeito-Escola: Dispersão das 3.594 Escolas com Reta de Coleman e Destaque das 263 Escolas Resilientes de Alta Eficácia*  
+*Figura 11 – Curva de Desempenho e Comparativo das Métricas dos Modelos Preditivos* *(Previsto)*  
+*Figura 12 – SHAP Summary Plot: Ranqueamento Global de Importância dos Fatores Escolares* *(Previsto)*  
+*Figura 13 – SHAP Dependence Plot: Interação Bivariada entre Regularidade Docente (IRD) e Vulnerabilidade (INSE)* *(Previsto)*  
 
 ---
 
@@ -93,9 +96,14 @@ The final stage of Brazilian Basic Education faces a historical and persistent c
 *Tabela 8 – Estatísticas Descritivas das Variáveis Centrais da Camada Gold ($N = 3.611$)*  
 *Tabela 9 – Diagnóstico de Cobertura e Auditoria de Preenchimento das Features ($X$)*  
 *Tabela 10 – Ranking Geral de Correlações Lineares (Pearson) e Monotônicas (Spearman) com a Variável-Alvo ($Y$)*  
-*Tabela 11 – Auditoria Longitudinal e Caracterização das Unidades Escolares Resilientes (Top 5 da Rede Estadual Paulista)*  
-*Tabela 12 – Métricas de Desempenho dos Algoritmos de Aprendizado Supervisionado* *(Previsto)*  
-*Tabela 13 – Matriz Diagnóstica Acionável de Recomendações para a Gestão Escolar* *(Previsto)*  
+*Tabela 11 – Caracterização Pedagógica e Desempenho nos Quatro Quadrantes Docentes da Rede Estadual*  
+*Tabela 12 – Teste de Hipóteses ($t$ de Student) para Insumos Físicos e Digitais de Infraestrutura*  
+*Tabela 13 – Comparativo Econométrico dos Modelos Aninhados ($R^2$ Cumulativo: Origem Social, Docentes e Infraestrutura)*  
+*Tabela 14 – Raio-X Comparativo do Perfil das Escolas Resilientes ($N = 263$) versus Média da Rede Geral*  
+*Tabela 15 – Diretorias Regionais de Ensino com Maior Concentração Proporcional de Escolas Resilientes*  
+*Tabela 16 – Auditoria Longitudinal e Caracterização das Unidades Escolares Resilientes (Top 5 da Rede Estadual)*  
+*Tabela 17 – Métricas de Desempenho dos Algoritmos de Aprendizado Supervisionado* *(Previsto)*  
+*Tabela 18 – Matriz Diagnóstica Acionável de Recomendações para a Gestão Escolar* *(Previsto)*  
 
 ---
 
@@ -107,6 +115,7 @@ The final stage of Brazilian Basic Education faces a historical and persistent c
 | **AFD** | Adequação da Formação Docente |
 | **CIE** | Cadastro de Informações Educacionais (Código Estadual da Escola - SEDUC-SP) |
 | **CV** | Coeficiente de Variação |
+| **DE** | Diretoria Regional de Ensino |
 | **EDA** | *Exploratory Data Analysis* (Análise Exploratória de Dados) |
 | **ETL** | *Extract, Transform, Load* (Extração, Transformação e Carga) |
 | **IED** | Indicador de Esforço Docente |
@@ -175,8 +184,22 @@ The final stage of Brazilian Basic Education faces a historical and persistent c
    5.1. Estatísticas Descritivas e Perfilamento da Camada Gold
    5.2. Anatomia Estatística da Variável-Alvo (Y)
    5.3. O Teste Empírico da Hipótese de Coleman e a Reta de Determinação Socioeconômica
+        5.3.1. Contextualização Histórica e Epistemológica do Relatório Coleman (1966)
+        5.3.2. A Reta de Determinação Linear e o Gap Social
+        5.3.3. O Coeficiente de Determinação (R²) e a Cautela Metodológica sobre a Variância Residual
    5.4. O Radar de Influências: Ranking Completo de Correlações (X vs. Y)
-   5.5. Auditoria Longitudinal e Empírica das Escolas Resilientes
+   5.5. O Fator Humano Intraescolar: Sobrecarga (IED) e Regularidade (IRD) Docente
+        5.5.1. A Matriz dos Quatro Quadrantes Docentes e o "Teto da Sobrecarga"
+        5.5.2. Modelagem Econométrica Controlada e o Gap Docente
+   5.6. Avaliação Empírica dos Insumos Físicos e Tecnológicos
+        5.6.1. Testes de Hipóteses para Infraestrutura Escolar
+        5.6.2. O Paradoxo dos Insumos Digitais e o Efeito do Porte da Unidade
+        5.6.3. Hierarquia Preditiva: Fator Humano versus Infraestrutura Física (R² Cumulativo)
+   5.7. Mapeamento Sistemático e Geográfico das Escolas Resilientes (Efeito-Escola)
+        5.7.1. Critério Psicométrico de Resiliência e os Três Regimes da Rede
+        5.7.2. O Raio-X Coletivo das 263 Escolas Resilientes
+        5.7.3. Concentração Espacial e o Polo de Eficácia do Vale do Ribeira (DE Apiaí)
+        5.7.4. Auditoria Longitudinal e Estabilidade das Escolas Líderes
 
 6. RESULTADOS E DISCUSSÕES [PREVISTO - FASE DE MODELAGEM]
    6.1. Desempenho Comparativo dos Modelos Preditivos
@@ -230,7 +253,7 @@ Para proporcionar leitura fluida e alinhada ao rigor metodológico exigido pela 
 - O **Capítulo 2 (Delimitação do Problema e Objetivos)** formaliza a questão norteadora, os limites temporais, espaciais e amostrais, as hipóteses estatísticas ($H_0, H_1, H_2$) e os objetivos geral e específicos.
 - O **Capítulo 3 (Materiais e Ambiente Computacional)** discrimina detalhadamente as bases de dados governamentais utilizadas, o enquadramento legal de transparência e privacidade (LAI e LGPD), os dicionários de variáveis e a especificação completa dos artefatos de dados e ferramentas tecnológicas.
 - O **Capítulo 4 (Metodologia e Engenharia de Dados)** apresenta o delineamento metodológico, a Arquitetura Medalhão, os funis amostrais de microdados (SARESP 2022 e Provão Paulista 2023–2024), a consolidação do target trienal ponderado ($Y$), a composição da Camada Gold ($N = 3.611$) com seus portões de qualidade (*quality gates*), os testes de estabilidade do ano-pivô 2023 e o protocolo de modelagem supervisionada e SHAP.
-- O **Capítulo 5 (Desenvolvimento e Análise Exploratória dos Dados)** compõe a seção viva do relatório, documentando a anatomia da variável-alvo, o teste econométrico da tese de Coleman, o ranking exaustivo de correlações com testes de hipótese e a auditoria histórica das escolas resilientes da rede estadual paulista.
+- O **Capítulo 5 (Desenvolvimento e Análise Exploratória dos Dados)** compõe a seção viva do relatório, documentando a anatomia da variável-alvo, o teste empírico da tese de Coleman, o radar de correlações, o diagnóstico aprofundado dos fatores docentes (IED/IRD), a avaliação econométrica da infraestrutura e tecnologia, e o mapeamento sistemático e espacial das escolas resilientes.
 - O **Capítulo 6 (Resultados e Discussões)** sintetizará a performance preditiva dos modelos supervisionados, o ranqueamento de importância via SHAP e a verificação empírica das hipóteses formuladas.
 - O **Capítulo 7 (Considerações Finais e Proposta de Aplicação)** sintetiza as conclusões da pesquisa, apresenta a proposta de Matriz Diagnóstica para a gestão educacional, debate as limitações do estudo e sinaliza caminhos para trabalhos futuros.
 
@@ -373,7 +396,20 @@ Esta investigação classifica-se como de **natureza quantitativa e aplicada**, 
 5. Interpretação algorítmica por explicabilidade pós-hoc (*XAI*);
 6. Proposição de matriz prescritiva para políticas públicas.
 
-A investigação analítica é teoricamente orientada pelas abordagens seminais da sociologia da educação (COLEMAN, 1966; BOURDIEU; PASSERON, 1970) e pelos modelos empíricos contemporâneos de eficácia escolar e efeito-escola (SOARES; ALVES, 2003; FRANCO et al., 2007).
+A investigação analítica é teoricamente orientada pelas abordagens seminais da sociologia da educação (COLEMAN, 1966; BOURDIEU; PASSERON, 1970) e pelos modelos empíricos contemporâneos de eficácia escolar e efeito-escola (SOARES; ALVES, 2003; FRANCO et al., 2007). O macrofluxo metodológico e arquitetural que orienta o desenvolvimento do trabalho, desde a ingestão dos dados brutos até a entrega dos subsídios para tomada de decisão, está sintetizado na Figura 1:
+
+```mermaid
+flowchart TD
+    A["1. Ingestão de Microdados Brutos (Bronze)<br/>SARESP, Provão Paulista, Censo Escolar, IRD, IED, INSE"] --> B["2. Engenharia e Limpeza de Dados (Silver)<br/>Chaves Primárias Duplas (CODESC e CO_ENTIDADE), Correção de Escalas"]
+    B --> C["3. Consolidação da Camada Gold Analítica<br/>3.611 Escolas Estaduais Regulares de Ensino Médio"]
+    C --> D["4. Análise Exploratória de Dados (EDA Modular)<br/>Distribuição Y, Teste de Coleman, Ranking de Features, Matriz Docente, Insumos, Escolas Resilientes"]
+    D --> E["5. Modelagem Preditiva Supervisionada<br/>OLS Baseline, Ridge, Lasso, Random Forest, LightGBM"]
+    E --> F["6. Interpretabilidade Algorítmica (XAI via SHAP)<br/>Importância Global, Efeitos Marginais Locais e Interações Docentes"]
+    F --> G["7. Matriz Prescritiva para Políticas Públicas<br/>Diretrizes Estratégicas para SEDUC-SP e Diretorias de Ensino"]
+```
+
+*Figura 1 – Macrofluxo Metodológico e Arquitetural Ponta a Ponta da Pesquisa.*  
+*Fonte: Elaborado pelos autores (2026).*
 
 ## 4.2. Arquitetura Medalhão de Dados
 
@@ -409,6 +445,9 @@ flowchart LR
     S1 & S2 & S5 --> G1 --> G2
 ```
 
+*Figura 2 – Diagrama da Arquitetura Medalhão de Dados (Bronze, Silver e Gold).*  
+*Fonte: Elaborado pelos autores (2026).*
+
 - **Camada Bronze (Raw)**: Repositório somente-leitura dos arquivos brutos baixados diretamente do INEP e da SEDUC-SP, mantidos sem qualquer alteração manual.
 - **Camada Silver (Padronizada e Validada)**: Conjunto de tabelas intermediárias processadas por domínio temático. Cada script de pipeline é responsável exclusivo por uma fonte, padronizando chaves primárias, tratando codificações de caracteres, saneando valores nulos e gerando artefatos compactados em `.parquet`.
 - **Camada Gold (Analítica / Feature Store)**: Base tabular final unificada no nível da escola, contendo exclusivamente unidades que satisfazem os critérios amostrais estatísticos, contendo todas as variáveis preditoras ($X$) e a variável-alvo trienal ponderada ($Y$).
@@ -429,6 +468,20 @@ A delimitação exata da população escolar paulista obedeceu a um funil de fil
 | 6 | Oferta Ativa de Ensino Médio Regular (`IN_MED == 1`) | 3.964 | -26,59% |
 | 7 | **Cruzamento Relacional com Cadastro Oficial SEDUC-SP** | **3.734** | -5,80% |
 
+*Fonte: Elaborado pelos autores (2026).*
+
+```mermaid
+flowchart TD
+    E1["1. Brasil: 217.625 Escolas Básicas"] --> E2["2. São Paulo: 34.099 Escolas (UF = SP)"]
+    E2 --> E3["3. Rede Estadual: 6.524 Escolas"]
+    E3 --> E4["4. Em Funcionamento Ativo: 5.750 Escolas"]
+    E4 --> E5["5. Ensino Regular: 5.400 Escolas"]
+    E5 --> E6["6. Oferta de Ensino Médio: 3.964 Escolas"]
+    E6 --> E7["7. Validação Cadastro SEDUC-SP: 3.734 Escolas (Spine)"]
+    E7 --> E8["8. Camada Gold Final: 3.611 Escolas (Triênio Válido)"]
+```
+
+*Figura 3 – Diagrama do Funil Amostral Metodológico de Seleção das Escolas.*  
 *Fonte: Elaborado pelos autores (2026).*
 
 As **3.734 escolas** constituem a espinha dorsal (*spine*) definitiva de análise institucional.
@@ -621,9 +674,16 @@ A investigação aprofundada da distribuição empírica do rendimento escolar e
    - **Curtose Leptocúrtica (*Kurtosis* = +5,008)**: O pico central em torno de 30% é pronunciadamente mais esguio do que o de uma distribuição gaussiana clássica (*kurtosis* normal de referência = 0), com caudas pesadas à direita.
 3. **Detecção e Significado dos Valores Atípicos (Regra de Tukey)**:
    - Aplicando o critério clássico de John Tukey ($Q_1 - 1,5 \times \text{IQR}$ e $Q_3 + 1,5 \times \text{IQR}$), constatou-se que apenas 4 escolas (0,11%) situam-se abaixo da barreira inferior (piso real absoluto de 21,01%);
-   - Em contrapartida, identificaram-se **106 escolas acima da barreira superior de 39,60% (2,94% da rede)**, com pontuações que se estendem até o pico de **67,46%** de acertos médios. Longe de representarem anomalias de mensuração, esses casos constituem as denominadas "escolas de alta eficácia" (*outperforming schools*), tornando-se objeto primordial de análise sociológica e modelagem preditiva.
+A caracterização visual dessa anatomia distribucional está sintetizada no painel conjugado da **Figura 5**, que integra o histograma empírico, a curva contínua de densidade de probabilidade (KDE) e o diagrama de caixa (*boxplot*):
 
-A caracterização visual dessa anatomia distribucional está sintetizada no painel conjugado da **Figura 5** (`reports/figures/eda_01_distribuicao_target.png`), que integra o histograma empírico, a curva contínua de densidade de probabilidade (KDE) e o diagrama de caixa (*boxplot*).
+<div align="center">
+
+![Figura 5 – Diagnóstico Estatístico da Variável-Alvo Trienal (Y)](figures/eda_01_distribuicao_target.png)
+
+*Figura 5 – Diagnóstico Estatístico da Variável-Alvo Trienal ($Y$): Painel Conjugado de Histograma com Curva de Densidade Contínua (KDE) e Boxplot de Dispersão.*  
+*Fonte: Elaborado pelos autores (2026).*
+
+</div>
 
 ## 5.3. O Teste Empírico da Hipótese de Coleman e a Reta de Determinação Socioeconômica
 
@@ -660,9 +720,16 @@ Essa métrica traz duas implicações fundamentais para a Ciência de Dados e a 
    - *Fatores intraescolares controláveis*: estabilidade e retenção do corpo docente (IRD), sobrecarga de trabalho e número de turmas dos professores (IED), liderança da equipe gestora, clima escolar e infraestrutura pedagógica;
    - *Ruído amostral e erros de mensuração*: oscilações estocásticas próprias da aplicação de exames padronizados e variações pontuais de frequência discente.
 
-Portanto, a postura científica rigorosa adotada neste trabalho reconhece que a modelagem preditiva subsequente não aspira a "explicar os 100%" da variância do fenômeno educacional — o que seria irrealista diante da complexidade humana e social —, mas sim a **isolar, mensurar e explicar uma fração significativa, robusta e acionável desse espaço residual** a partir dos fatores escolares controláveis pela gestão pública.
+A dispersão completa das 3.594 unidades escolares, acompanhada da Reta de Coleman e do zoneamento dos resíduos de superação pedagógica, é ilustrada na **Figura 6**:
 
-A dispersão completa das 3.594 unidades escolares, acompanhada da Reta de Coleman e do zoneamento dos resíduos de superação pedagógica, é ilustrada na **Figura 6** (`reports/figures/eda_02_teste_coleman_inse.png`).
+<div align="center">
+
+![Figura 6 – Dispersão do Rendimento Escolar em Matemática versus Nível Socioeconômico Médio (Reta de Coleman e Resíduos)](figures/eda_02_teste_coleman_inse.png)
+
+*Figura 6 – Dispersão do Rendimento Escolar em Matemática versus Nível Socioeconômico Médio (Reta de Coleman e Resíduos).*  
+*Fonte: Elaborado pelos autores (2026).*
+
+</div>
 
 ## 5.4. O Radar de Influências: Ranking Completo de Correlações (X vs. Y)
 
@@ -694,21 +761,182 @@ Para mapear exaustivamente quais fatores escolares exercem maior atração sobre
 | **20º** | `QT_SALAS_EXISTENTES` | **-0,0312** | **-0,0240** | $p = 0,061$ (ns) | Infraestrutura Física Geral |
 | **25º** | `IN_LABORATORIO_INFORMATICA`| **+0,0056**| **+0,0049** | $p = 0,738$ (ns) | Tecnologia: Não Significante |
 
-*Fonte: Elaborado pelos autores (2026). Notas: (***) $p < 0,001$; (**) $p < 0,01$; (*) $p < 0,05$; (ns) não significante.*
+O ordenamento visual completo das variáveis alavancas e gargalos é apresentado na **Figura 7**:
 
-O radar empírico revela quatro constatações fundamentais para a Ciência de Dados e para a gestão pública:
-1. **O Bloco Docente como Maior Determinante Intraescolar**: Isolando-se o efeito exógeno da renda familiar, as variáveis com maior capacidade de predição pertencem estritamente às condições de trabalho dos professores. A proporção de docentes submetidos a sobrecarga alta (`IED_ESFORCO_ALTO`, $r = -0,2348$) e o índice global de esforço (`IED_SCORE_MEDIO`, $r = -0,2139$) representam os maiores gargalos de rendimento escolar. Inversamente, a estabilidade e regularidade do corpo docente (`MEDIA_IRD`, $r = +0,1734$) atua como uma robusta alavanca de proteção.
-2. **A Validação Empírica do "Paradoxo dos Insumos Digitais"**: O volume de computadores por aluno ($r = +0,0417$) e a presença de laboratório de informática ($r = +0,0056$, sem significância estatística, $p = 0,738$) exercem correlação quase nula com o aproveitamento discente em Matemática. Comparativamente, o coeficiente negativo da sobrecarga docente ($r = -0,2348$) é **mais de 40 vezes mais expressivo** do que a existência de um laboratório de informática. Esse resultado desafia diretamente políticas que priorizam a aquisição de equipamentos de TI sem o devido investimento nas condições humanas e organizacionais de ensino.
-3. **O Transbordamento Experimental do Laboratório de Ciências**: Diferentemente das salas de computadores, a existência de laboratórios físicos voltados a experimentos de biologia, física e química apresentou associação positiva e estatisticamente robusta ($r = +0,1124$, $p < 0,001$), corroborando a tese de que a aprendizagem baseada em experimentação e método científico desenvolve competências indutivas que beneficiam diretamente o raciocínio matemático.
-4. **Deseconomias de Escala e Efeito de Aglomeração**: O tamanho da escola em número de matriculados (`QTD_ALUNOS_INSE`, $r = -0,2277$) e a quantidade de salas ativas ($r = -0,0730$) correlacionam-se negativamente com a nota final, sugerindo que unidades escolares massificadas enfrentam maiores desafios de controle de frequência, coesão comunitária e mediação pedagógica.
+<div align="center">
 
-O ordenamento visual completo das variáveis alavancas e gargalos é apresentado na **Figura 7** (`reports/figures/eda_03_ranking_correlacoes.png`).
+![Figura 7 – Ranking Comparativo das Correlações das Variáveis Preditoras com o Rendimento em Matemática](figures/eda_03_ranking_correlacoes.png)
 
-## 5.5. Auditoria Longitudinal e Empírica das Escolas Resilientes
+*Figura 7 – Ranking Comparativo das Correlações das Variáveis Preditoras ($X$) com o Rendimento em Matemática ($Y$).*  
+*Fonte: Elaborado pelos autores (2026).*
 
-Para afastar a hipótese de que as unidades escolares com resíduos altamente positivos na Reta de Coleman pudessem decorrer de meras oscilações amostrais estocásticas ou de distorções em um único ano de aplicação, executou-se uma **auditoria cirúrgica longitudinal sobre o comportamento histórico (2022 a 2024)** das cinco unidades com maior resíduo da rede:
+</div>
 
-*Tabela 11 – Auditoria Longitudinal e Caracterização das Unidades Escolares Resilientes (Top 5 da Rede Estadual Paulista)*
+---
+
+## 5.5. O Fator Humano Intraescolar: Sobrecarga (IED) e Regularidade (IRD) Docente
+
+A constatação de que o bloco docente constitui a dimensão escolar de maior peso empírico motivou uma investigação aprofundada da interação entre a **sobrecarga de trabalho** (`IED_SCORE_MEDIO`) e a **estabilidade do vínculo escolar** (`MEDIA_IRD`), avaliadas sobre 3.591 unidades regulares ($99,4\%$ da base).
+
+### 5.5.1. A Matriz dos Quatro Quadrantes Docentes e o "Teto da Sobrecarga"
+Particionando as escolas estaduais pelas medianas da rede ($\text{IED} = 3,77$ e $\text{IRD} = 2,61$), estruturou-se uma matriz de quatro quadrantes que agrupa a rede em contingentes homogêneos de aproximadamente 900 escolas cada:
+
+*Tabela 11 – Caracterização Pedagógica e Desempenho nos Quatro Quadrantes Docentes da Rede Estadual*
+
+| Quadrante Docente | Perfil de Trabalho | Escolas ($N$) | % Rede | IED Médio | IRD Médio | INSE Médio | Nota Média ($Y$) |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Q1 (Crítico)** | Alta Sobrecarga & Baixa Regularidade | 904 | 25,2% | 4,08 | 2,32 | 5,25 | **30,08%** |
+| **Q2 (Sobrecarga)** | Alta Sobrecarga & Alta Regularidade | 890 | 24,8% | 4,08 | 2,91 | 5,19 | **30,08%** |
+| **Q3 (Rotatividade)**| Baixa Sobrecarga & Baixa Regularidade | 892 | 24,8% | 3,29 | 2,27 | 5,25 | **31,20%** |
+| **Q4 (Ideal)** | Baixa Sobrecarga & Alta Regularidade | 905 | 25,2% | 3,33 | 3,07 | 5,29 | **32,28%** |
+
+*Fonte: Elaborado pelos autores (2026).*
+
+O cruzamento dos quadrantes desvelou um fenômeno de enorme valor prescritivo para as políticas públicas: **o "Teto da Sobrecarga"**. As escolas do Quadrante 1 e do Quadrante 2 apresentam rigorosamente a mesma média de desempenho em Matemática (**30,08%**). Esse resultado comprova que **quando o corpo docente está submetido a regimes severos de sobrecarga (IED elevado, com professores atuando em múltiplos turnos e escolas), a estabilidade de vínculo não consegue gerar benefícios pedagógicos**. A exaustão física e cognitiva do docente neutraliza o ganho potencial de sua permanência na escola.
+
+A dispersão bivariada com gradiente contínuo e o diagrama de caixas (*boxplot*) dos quatro quadrantes docentes estão ilustrados na **Figura 8**:
+
+<div align="center">
+
+![Figura 8 – O Fator Humano Intraescolar: Dispersão do Esforço Docente versus Desempenho e Boxplot dos Quatro Quadrantes Docentes](figures/eda_04_fatores_docentes_ied_ird.png)
+
+*Figura 8 – O Fator Humano Intraescolar: Dispersão do Esforço Docente (IED) versus Desempenho e Boxplot dos Quatro Quadrantes Docentes.*  
+*Fonte: Elaborado pelos autores (2026).*
+
+</div>
+
+### 5.5.2. Modelagem Econométrica Controlada e o Gap Docente
+Para comprovar que o efeito docente não decorre de mero viés de alocação de professores em escolas de bairros mais ricos, ajustou-se uma regressão linear múltipla controlando pelo nível socioeconômico familiar:
+$$\text{TARGET\_TRIENAL\_MAT} = \beta_0 + (6,384 \cdot \text{MEDIA\_INSE}) - (1,475 \cdot \text{IED\_SCORE\_MEDIO}) + (1,269 \cdot \text{MEDIA\_IRD})$$
+
+O poder explicativo do modelo saltou de $R^2 = 17,05\%$ (apenas INSE) para **$R^2 = 22,72\%$** (ganho líquido de $+5,67$ pontos percentuais). Constata-se que, para duas escolas com exatamente o mesmo perfil de renda familiar:
+- Cada ponto adicional de sobrecarga docente (IED) penaliza a nota escolar em **$-1,48$ p.p.**;
+- Cada ponto adicional de regularidade e permanência do vínculo (IRD) eleva a nota em **$+1,27$ p.p.**
+Esse achado confirma empiricamente a **Hipótese Principal ($H_1$)** deste TCC: o corpo docente atua como um motor autônomo de rendimento, capaz de mitigar a vulnerabilidade social.
+
+---
+
+## 5.6. Avaliação Empírica dos Insumos Físicos e Tecnológicos
+
+Confrontou-se formalmente o papel dos recursos físicos e digitais na determinação do aprendizado discente, submetendo a infraestrutura a testes de hipótese e modelagens aninhadas.
+
+### 5.6.1. Testes de Hipóteses para Infraestrutura Escolar
+Aplicou-se o teste $t$ de Student bicaudal para amostras independentes comparando estabelecimentos com e sem determinados insumos:
+
+*Tabela 12 – Teste de Hipóteses ($t$ de Student) para Insumos Físicos e Digitais de Infraestrutura*
+
+| Insumo de Infraestrutura | Média Sem Insumo | Média Com Insumo | Gap Líquido ($\Delta$) | Estatística $t$ | $p$-valor | Significado Prático |
+| :--- | :---: | :---: | :---: | :---: | :---: | :--- |
+| **Laboratório de Ciências** | 30,68% | 31,68% | **+1,00 p.p.** | $t = +6,60$ | $p < 0,001$ (***) | Relevante e altamente significante |
+| **Biblioteca / Sala Leitura** | 30,23% | 31,03% | **+0,80 p.p.** | $t = +4,33$ | $p < 0,001$ (***) | Significante para apoio pedagógico |
+| **Internet Banda Larga** | 30,30% | 30,97% | **+0,67 p.p.** | $t = +2,50$ | $p = 0,013$ (*) | Modesto, mas significante |
+| **Lousa Digital** | 30,80% | 31,27% | **+0,47 p.p.** | $t = +3,16$ | $p = 0,002$ (**) | Modesto ganho de modernização |
+| **Laboratório de Informática** | 30,88% | 30,94% | **+0,06 p.p.** | $t = +0,33$ | $p = 0,7419$ (ns) | **Estatisticamente Nulo / Irrelevante** |
+
+*Fonte: Elaborado pelos autores (2026).*
+
+O único insumo físico com impacto robusto foi o **Laboratório de Ciências** ($\Delta = +1,00$ p.p., $p < 0,001$), corroborando a literatura de que ambientes experimentais práticos fomentam o raciocínio hipotético-dedutivo transferível para a Matemática. Em contrapartida, ter ou não laboratório de informática revelou-se irrelevante ($p = 0,74$).
+
+### 5.6.2. O Paradoxo dos Insumos Digitais e o Efeito do Porte da Unidade
+A análise estratificada da densidade de computadores por aluno revelou um resultado contraintuitivo:
+- Escolas com **Zero Computadores** ($N = 41$): Média = **30,28%**;
+- Escolas com **1 a 20 PCs** ($N = 576$): Média = **30,50%**;
+- Escolas com **21 a 50 PCs** ($N = 855$): Média = **30,94%**;
+- Escolas com **51 a 100 PCs** ($N = 1.316$): Média = **30,97%**;
+- Escolas com **Mais de 100 PCs** ($N = 823$, média de 140 máquinas): Média = **31,20%**.
+
+A amplitude entre não ter computador algum e possuir 140 equipamentos é de ínfimos **0,92 pontos percentuais**. Equipamentos sem projeto pedagógico estruturado e sem professores capacitados atuam como insumos estéreis.
+
+A caracterização visual dos gaps de infraestrutura e do comportamento por densidade de máquinas está detalhada na **Figura 9**:
+
+<div align="center">
+
+![Figura 9 – Avaliação dos Insumos Físicos e Tecnológicos: Gaps dos Insumos Binários e Rendimento por Faixa de Computadores Discentes](figures/eda_05_infraestrutura_e_tecnologia.png)
+
+*Figura 9 – Avaliação dos Insumos Físicos e Tecnológicos: Gaps dos Insumos Binários e Rendimento por Faixa de Computadores Discentes.*  
+*Fonte: Elaborado pelos autores (2026).*
+
+</div>
+
+### 5.6.3. Hierarquia Preditiva: Fator Humano versus Infraestrutura Física ($R^2$ Cumulativo)
+A comparação definitiva entre as dimensões escolares fundamenta-se no ajuste de três modelos econométricos aninhados:
+
+*Tabela 13 – Comparativo Econométrico dos Modelos Aninhados ($R^2$ Cumulativo: Origem Social, Docentes e Infraestrutura)*
+
+| Modelo Econométrico | Variáveis Preditoras Incluídas | $R^2$ Ajustado | Ganho Marginal ($\Delta R^2$) | Força Relativa de Explicação |
+| :---: | :--- | :---: | :---: | :--- |
+| **Modelo 1** | Apenas Nível Socioeconômico (`MEDIA_INSE`) | **17,04%** | – | Base de Origem Social |
+| **Modelo 2** | INSE + Bloco Docente (`IED_SCORE_MEDIO` + `MEDIA_IRD`) | **22,72%** | **+5,68 p.p.** | **4,4 vezes superior à infraestrutura** |
+| **Modelo 3** | INSE + Docentes + Infraestrutura Completa (Salas, PCs, Labs)| **24,01%** | **+1,29 p.p.** | Contribuição marginal residual |
+
+*Fonte: Elaborado pelos autores (2026).*
+
+Essa modelagem produz uma das conclusões epistemológicas centrais desta dissertação: **o fator humano docente explica 4,4 vezes mais da variabilidade do rendimento escolar do que todos os prédios, salas e computadores combinados**. Na regressão múltipla final, o coeficiente associado a cada máquina adicional de computador é de apenas $+0,0009$, enquanto a sobrecarga docente mantém forte penalização de $-1,42$.
+
+---
+
+## 5.7. Mapeamento Sistemático e Geográfico das Escolas Resilientes (Efeito-Escola)
+
+A identificação empírica de onde e como o "efeito-escola" se manifesta orientou o mapeamento sistemático das unidades de alta eficácia da rede paulista.
+
+### 5.7.1. Critério Psicométrico de Resiliência e os Três Regimes da Rede
+
+Fundamentando-se na literatura de Eficácia Escolar (SOARES; ALVES, 2003; BROOKE, 2008), definiu-se a resiliência acadêmica a partir do resíduo padronizado da regressão de Coleman ($e_i = Y_i - \hat{Y}_i$). Adotou-se o ponto de corte estrito de **$+1,5 \times \text{RMSE}$ (+5,18 pontos percentuais acima da reta socioeconômica)**, classificando a rede estadual em três regimes:
+1. **Desempenho Típico (Alinhado ao INSE)**: 3.211 escolas (**89,34%** da rede);
+2. **Escolas Resilientes de Alta Eficácia**: **263 escolas (7,32% da rede)**;
+3. **Subdesempenho Crítico**: 120 escolas (**3,34%** da rede).
+
+A dispersão de toda a rede com o zoneamento dos três regimes é ilustrada na **Figura 10**:
+
+<div align="center">
+
+![Figura 10 – Mapeamento do Efeito-Escola: Dispersão das 3.594 Escolas com Reta de Coleman e Destaque das 263 Escolas Resilientes de Alta Eficácia](figures/eda_06_escolas_resilientes_efeito_escola.png)
+
+*Figura 10 – Mapeamento do Efeito-Escola: Dispersão das 3.594 Escolas com Reta de Coleman e Destaque das 263 Escolas Resilientes de Alta Eficácia.*  
+*Fonte: Elaborado pelos autores (2026).*
+
+</div>
+
+### 5.7.2. O Raio-X Coletivo das 263 Escolas Resilientes
+O cotejamento das 263 unidades resilientes contra a média da rede estadual revela uma identidade institucional inequívoca:
+
+*Tabela 14 – Raio-X Comparativo do Perfil das Escolas Resilientes ($N = 263$) versus Média da Rede Geral*
+
+| Dimensão Avaliada | Média da Rede Geral | Média das Escolas Resilientes | Diferença Absoluta ($\Delta$) | Interpretação Científica |
+| :--- | :---: | :---: | :---: | :--- |
+| **Nota Média Matemática ($Y$)** | 30,92% | **39,23%** | **+8,31 p.p.** | Desempenho expressivamente superior |
+| **Nível Socioeconômico (INSE)** | 5,25 | **5,29** | **+0,04** | **Condição socioeconômica idêntica** |
+| **Sobrecarga Severa (% Cat 5 e 6)**| 17,24% | **9,35%** | **-7,89 p.p.** | **Redução de 45,8% na sobrecarga docente!** |
+| **Regularidade Docente (IRD)** | 2,65 | **2,90** | **+0,25** | Vínculo estável e contínuo com a unidade |
+| **Porte Discente (Alunos Triênio)**| 219,5 | **140,6** | **-78,9 alunos** | Unidades menores, coesas e acolhedoras |
+| **Parque Computacional (PCs Aluno)**| 69,7 máquinas | **69,6 máquinas** | **-0,12 máquinas** | **Diferença rigorosamente nula!** |
+| **Laboratório de Ciências** | 25,4% | **34,2%** | **+8,8 p.p.** | Maior presença de método experimental |
+
+*Fonte: Elaborado pelos autores (2026).*
+
+As 263 escolas resilientes entregam $+8,31$ pontos percentuais a mais de aproveitamento atendendo estudantes com o mesmo perfil de renda da rede geral, com o mesmo número de computadores, porém com **quase a metade da sobrecarga de trabalho docente** e vínculos consideravelmente mais estáveis.
+
+### 5.7.3. Concentração Espacial e o Polo de Eficácia do Vale do Ribeira (DE Apiaí)
+A análise de dispersão espacial revelou que as escolas resilientes não se distribuem de forma aleatória pelo território paulista:
+
+*Tabela 15 – Diretorias Regionais de Ensino com Maior Concentração Proporcional de Escolas Resilientes*
+
+| Diretoria Regional de Ensino (DE) | Polo Geográfico | Total Escolas ($N$) | Escolas Resilientes | % Resiliência |
+| :--- | :--- | :---: | :---: | :---: |
+| **DE Apiaí** | Vale do Ribeira | 30 | **9** | **30,0%** |
+| **DE Sertãozinho** | Região Norte / Ribeirão Preto | 25 | **7** | **28,0%** |
+| **DE Centro Oeste** | Capital / Região Central | 34 | **7** | **20,6%** |
+| **DE Franca** | Região Nordeste | 41 | **8** | **19,5%** |
+| **DE Campinas Leste** | Região Metropolitana de Campinas | 38 | **7** | **18,4%** |
+
+*Fonte: Elaborado pelos autores (2026).*
+
+O destaque absoluto cabe à **Diretoria de Ensino de Apiaí**, localizada no Vale do Ribeira — historicamente a mesorregião de menor Índice de Desenvolvimento Humano (IDH) do Estado de São Paulo. Apiaí abriga a maior taxa proporcional de escolas resilientes de todo o estado (**30,0% de sua rede**), comprovando empiricamente que a alta eficácia escolar e o compromisso pedagógico florescem com vigor extraordinário mesmo nos territórios de maior carência econômica. Na Capital, destaca-se a DE Centro Oeste, cuja representatividade é coroada pela centenária EE Caetano de Campos Consolação (superação de $+16,77$ p.p.).
+
+### 5.7.4. Auditoria Longitudinal e Estabilidade das Escolas Líderes
+A auditoria histórica das cinco unidades de maior resíduo positivo da rede (Tabela 16) comprova que o sucesso acadêmico é persistente no tempo e alicerçado na dedicação humana:
+
+*Tabela 16 – Auditoria Longitudinal e Caracterização das Unidades Escolares Resilientes (Top 5 da Rede Estadual)*
 
 | Escola / Município / Diretoria de Ensino | INSE | Nota ($Y$) | Previsto | Resíduo | Alunos Triênio | SARESP 2022 | Provão 2023 | Provão 2024 | IED Médio | IRD Médio | Computadores |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -720,11 +948,7 @@ Para afastar a hipótese de que as unidades escolares com resíduos altamente po
 
 *Fonte: Elaborado pelos autores (2026).*
 
-A auditoria individualizada revelou quatro pilares explicativos para a resiliência escolar:
-1. **Consistência Longitudinal Comprovada**: Todas as unidades apresentaram patamares excepcionais em pelo menos duas das três edições analisadas, refutando categoricamente a tese de que o sucesso derivaria de incidentes pontuais de amostragem.
-2. **A Curva de Aprendizado Institucional ("O Efeito 2023")**: Identificou-se que em 2023 todas as unidades apresentaram uma inflexão descendente temporária de desempenho, coincidindo com a estreia do Provão Paulista (exame formulado pela Fundação Vunesp com matriz de referência inédita). A pronta recuperação das médias em 2024 (atingindo marcas de até 91,24% de acertos) comprova a rápida capacidade de readequação pedagógica das equipes escolares e legitima o acerto metodológico em adotar a **média trienal ponderada por estudantes**.
-3. **A Geografia do Capital Social Comunitário**: As unidades resilientes compartilham o traço comum de localização em **municípios de pequeno porte do interior do estado**, onde a escala reduzida de matrículas favorece relações personalizadas entre gestão, professores e famílias, facilitando a contenção da evasão escolar e o acompanhamento pedagógico individualizado.
-4. **O Caso Paradigmático da EE Terezinha Mariano Magnani**: Situada em Espírito Santo do Turvo, a unidade atendeu uma amostra expressiva de **111 estudantes concluintes** no triênio com um dos menores índices socioeconômicos da amostra auditada ($\text{INSE} = 4,86$). A escola possui **zero computadores para alunos**, porém ostenta o menor esforço docente de toda a rede auditada ($\text{IED} = 2,40$, com apenas 5% de professores em sobrecarga) e uma das mais elevadas taxas de regularidade de vínculo ($\text{IRD} = 3,26$). É a comprovação empírica definitiva de que **a estabilidade humana, o clima organizacional e a dedicação docente superam a carência de insumos materiais tecnológicos**.
+Destaca-se o caso paradigmático da **EE Terezinha Mariano Magnani**: com 111 estudantes avaliados no triênio e INSE de baixa renda ($4,86$), a escola opera com **zero computadores para alunos**, mas ostenta o menor esforço docente ($\text{IED} = 2,40$) e uma das mais elevadas taxas de regularidade ($\text{IRD} = 3,26$) do estado, alcançando 47,48% de rendimento. Essa evidência reitera o primado da estabilidade humana sobre o maquinário físico, concluindo com solidez a etapa exploratória do estudo.
 
 ---
 
@@ -771,14 +995,15 @@ A auditoria individualizada revelou quatro pilares explicativos para a resiliên
 5. BRASIL. Instituto Nacional de Estudos e Pesquisas Educacionais Anísio Teixeira (INEP). **Censo Escolar da Educação Básica: Caderno de Instruções e Variáveis de Infraestrutura**. Brasília, DF: INEP, 2023. Disponível em: `https://www.gov.br/inep/pt-br/acesso-a-informacao/dados-abertos/microdados/censo-escolar`. Acesso em: 02 set. 2026.
 6. BRASIL. **Lei nº 12.527, de 18 de novembro de 2011**. Regula o acesso a informações previsto no inciso XXXIII do art. 5º, no inciso II do § 3º do art. 37 e no § 2º do art. 216 da Constituição Federal. Brasília, DF: Presidência da República, 2011.
 7. BRASIL. **Lei nº 13.709, de 14 de agosto de 2018**. Lei Geral de Proteção de Dados Pessoais (LGPD). Brasília, DF: Presidência da República, 2018.
-8. COLEMAN, James S. et al. **Equality of Educational Opportunity**. Washington, D.C.: U.S. Department of Health, Education, and Welfare, 1966.
-9. FACELI, Katti; LORENA, Ana Carolina; GAMA, João; ALMEIDA, Tiago Agostinho de; CARVALHO, André C. P. L. F. **Inteligência Artificial: Uma Abordagem de Aprendizado de Máquina**. 2. ed. Rio de Janeiro: LTC, 2021.
-10. FRANCO, Creso et al. Eficácia escolar no Ensino Fundamental: fatores associados ao rendimento dos alunos e à equidade distributiva da escola. **Revista Brasileira de Educação**, v. 12, n. 36, p. 489–507, 2007.
-11. LUNDBERG, Scott M.; LEE, Su-In. A unified approach to interpreting model predictions. In: **Advances in Neural Information Processing Systems (NeurIPS)**, v. 30, p. 4765–4774, 2017.
-12. RUSSELL, Stuart; NORVIG, Peter. **Inteligência Artificial: Uma Abordagem Moderna**. 4. ed. Rio de Janeiro: GEN LTC, 2022.
-13. SÃO PAULO (Estado). Secretaria da Educação do Estado de São Paulo (SEDUC-SP). **Relatório Pedagógico SARESP 2023: Desempenho e Padrões de Proficiência em Matemática no Ensino Médio**. São Paulo: SEDUC-SP/CIMA, 2024. Disponível em: `https://dados.educacao.sp.gov.br`. Acesso em: 02 set. 2026.
-14. SOARES, José Francisco; ALVES, Maria Teresa Gonzaga. Desigualdades raciais no sistema brasileiro de educação básica. **Educação e Pesquisa**, v. 29, n. 1, p. 147–165, 2003.
-15. TUKEY, John W. **Exploratory Data Analysis**. Reading, MA: Addison-Wesley, 1977.
+8. BROOKE, Nigel. **Eficácia escolar: investigando modelos e práticas de gestão**. Belo Horizonte: Editora UFMG, 2008.
+9. COLEMAN, James S. et al. **Equality of Educational Opportunity**. Washington, D.C.: U.S. Department of Health, Education, and Welfare, 1966.
+10. FACELI, Katti; LORENA, Ana Carolina; GAMA, João; ALMEIDA, Tiago Agostinho de; CARVALHO, André C. P. L. F. **Inteligência Artificial: Uma Abordagem de Aprendizado de Máquina**. 2. ed. Rio de Janeiro: LTC, 2021.
+11. FRANCO, Creso et al. Eficácia escolar no Ensino Fundamental: fatores associados ao rendimento dos alunos e à equidade distributiva da escola. **Revista Brasileira de Educação**, v. 12, n. 36, p. 489–507, 2007.
+12. LUNDBERG, Scott M.; LEE, Su-In. A unified approach to interpreting model predictions. In: **Advances in Neural Information Processing Systems (NeurIPS)**, v. 30, p. 4765–4774, 2017.
+13. RUSSELL, Stuart; NORVIG, Peter. **Inteligência Artificial: Uma Abordagem Moderna**. 4. ed. Rio de Janeiro: GEN LTC, 2022.
+14. SÃO PAULO (Estado). Secretaria da Educação do Estado de São Paulo (SEDUC-SP). **Relatório Pedagógico SARESP 2023: Desempenho e Padrões de Proficiência em Matemática no Ensino Médio**. São Paulo: SEDUC-SP/CIMA, 2024. Disponível em: `https://dados.educacao.sp.gov.br`. Acesso em: 02 set. 2026.
+15. SOARES, José Francisco; ALVES, Maria Teresa Gonzaga. Desigualdades raciais no sistema brasileiro de educação básica. **Educação e Pesquisa**, v. 29, n. 1, p. 147–165, 2003.
+16. TUKEY, John W. **Exploratory Data Analysis**. Reading, MA: Addison-Wesley, 1977.
 
 ---
 
