@@ -1,0 +1,47 @@
+===========================================================================
+MODELAGEM PREDITIVA: ETAPA 2 — BASELINES LINEARES (5-FOLD CV)
+===========================================================================
+
+1. Carregando matriz de dados auditada...
+   -> Amostra: 3,611 escolas estaduais
+   -> Variáveis Preditivas (X): 18 features
+   -> Variável-Alvo (y): TARGET_TRIENAL_MAT (Média=30.93% | DP=3.86%)
+
+2. Executando Validação Cruzada (5-Fold) para os Baselines Lineares...
+   -> Treinando: 1. OLS (Regressão Múltipla)...
+   -> Treinando: 2. Ridge (Regularização L2)...
+   -> Treinando: 3. Lasso (Regularização L1)...
+
+===========================================================================
+3. TABELA OFICIAL DE DESEMPENHO: BASELINES LINEARES (5-FOLD CV)
+===========================================================================
+                     Modelo  R2_Medio (%)  R2_DP (%)  RMSE (p.p.)  RMSE_DP  MAE (p.p.)  MAE_DP
+1. OLS (Regressão Múltipla)         23.09       0.37        3.385    0.070       2.433   0.073
+2. Ridge (Regularização L2)         23.09       0.37        3.385    0.070       2.433   0.073
+3. Lasso (Regularização L1)         23.14       0.28        3.384    0.071       2.433   0.075
+
+===========================================================================
+4. COEFICIENTES PADRONIZADOS DA REGRESSÃO RIDGE (IMPACTO RELATIVO)
+===========================================================================
+                   Feature  Beta_Padronizado
+                MEDIA_INSE          1.436482
+                 IRD_MEDIO          0.553104
+       QT_SALAS_UTILIZADAS         -0.426227
+                 MED_CAT_5         -0.262259
+          IED_ESFORCO_ALTO         -0.191085
+   IN_LABORATORIO_CIENCIAS          0.185428
+                 MED_CAT_3          0.165993
+    IN_EQUIP_LOUSA_DIGITAL          0.134339
+      TOTAL_ALUNOS_TRIENIO         -0.130947
+           IED_SCORE_MEDIO         -0.123376
+IN_BIBLIOTECA_SALA_LEITURA          0.113368
+                 MED_CAT_2         -0.096318
+                 MED_CAT_4         -0.049323
+                 MED_CAT_1          0.040050
+             QT_COMP_ALUNO          0.036737
+            IN_BANDA_LARGA          0.033874
+IN_LABORATORIO_INFORMATICA          0.025226
+                 MED_CAT_6          0.020049
+
+[SUCESSO] Tabela de métricas salva em: D:\TCC\Quinzena 3 - Material e metodo\tcc_desempenho_escolar\data\gold\metricas_baselines_lineares.csv
+A linha de base linear está oficialmente estabelecida!

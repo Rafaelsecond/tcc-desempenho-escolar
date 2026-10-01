@@ -3,7 +3,7 @@
 EDA PASSO 6: O MAPEAMENTO SISTEMÁTICO DAS ESCOLAS RESILIENTES (EFEITO-ESCOLA)
 =============================================================================
 Objetivo Pedagógico e Científico:
-  Em Eficácia Escolar (School Effectiveness Research), a pergunta mais nobre é:
+  Em Eficácia Escolar (School Effectiveness Research), uma questão importante é:
   "Quais escolas públicas conseguem entregar alta aprendizagem mesmo atendendo
    estudantes de famílias em situação de vulnerabilidade socioeconômica?"
 
