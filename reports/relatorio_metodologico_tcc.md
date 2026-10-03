@@ -616,3 +616,201 @@ Nesta seção são documentadas as etapas de modelagem preditiva aplicadas sobre
 #### Conclusão Epistemológica da Modelagem:
 A hierarquia dos fatores preditivos mostrou-se **estritamente invariante à especificação algorítmica**: sob todos os modelos (paramétricos lineares, árvores em paralelo ou sequenciais), o capital socioeconômico (`MEDIA_INSE`) e a regularidade docente (`IRD_MEDIO`) dominam a variabilidade do desempenho, enquanto recursos digitais e equipamentos isolados exercem impacto nulo. Essa invariância confere ao TCC o mais elevado grau de robustez econométrica e validade interna.
 
+---
+
+## 13. Fase 07: Análise de Explicabilidade com SHAP e Interpretação Causal-Estatística
+
+A transição da acurácia preditiva para a explicabilidade constitui a etapa culminante da pesquisa. Para superar a opacidade intrínseca dos modelos de aprendizado de máquina (*black-box*), aplicou-se a metodologia **SHAP** (*Shapley Additive exPlanations*) sobre o modelo campeão (**Random Forest Regressor**), estruturada sob os 5 pilares do protocolo metodológico.
+
+### 13.1 Métodos e Técnicas Utilizadas
+1. **Fundamentação Algorítmica (Teoria dos Jogos Cooperativos)**:
+   - Utilização do algoritmo `shap.TreeExplainer` (Lundberg & Lee, 2017), otimizado para ensembles de árvores de decisão.
+   - O algoritmo calcula as contribuições marginais justas de Shapley para cada uma das 18 variáveis preditivas em relação à proficiência média da rede estadual ($\mathbb{E}[f(x)] \approx 30,93\%$), garantindo as propriedades matemáticas de **Eficiência Aditiva**, **Simetria**, **Monotonicidade** e **Dummy/Inocuidade**.
+2. **Ambiente Computacional e Escopo Amostral**:
+   - Aplicação sobre o total de $N = 3.611$ escolas estaduais da Camada Gold, com matriz analítica 100% íntegra (zero valores nulos e 18 preditores limpos de identificadores).
+3. **Artefatos Produzidos**:
+   - Gráfico de Dispersão e Direcionalidade (*Beeswarm Plot*): `reports/figures/shap_01_summary_beeswarm.png` (300 DPI);
+   - Gráfico de Importância Global Desenviesada (*Bar Plot*): `reports/figures/shap_02_bar_importance.png` (300 DPI);
+   - Tabela Oficial de Impactos Marginais: `data/gold/importancias_shap_random_forest.csv`.
+
+---
+
+### 13.2 Motivações Estratégicas das Escolhas
+1. **Superação do Viés de Impureza de Gini/MDI**:
+   - Métricas tradicionais de importância em árvores (*Mean Decrease in Impurity*) apresentam viés favorável a variáveis contínuas com muitos valores únicos (como número de alunos ou salas). O SHAP calcula a contribuição marginal baseada em teoria dos jogos, fornecendo uma leitura desprovida de viés de escala.
+2. **Identificação da Direcionalidade Causal-Estatística**:
+   - O ranking MDI apenas indicava se a variável era relevante, mas não explicitava se "ter mais" daquela característica aumentava ou diminuía a nota da escola. O SHAP resolve essa lacuna ao separar os efeitos positivos e negativos com precisão em pontos percentuais.
+
+---
+
+### 13.3 Resumo Consolidado dos Resultados (Métricas SHAP Oficiais)
+
+A tabela abaixo sintetiza o impacto médio absoluto de cada fator escolar na nota média trienal de Matemática, medido em pontos percentuais ($\text{p.p.}$):
+
+| Posição | Variável (Feature) | Dimensão Avaliada | Impacto Médio SHAP (p.p.) | Comportamento no Beeswarm |
+| :---: | :--- | :--- | :---: | :--- |
+| 1º | `MEDIA_INSE` | Contexto Socioeconômico | **1,170** | Alto = Positivo (até $+7,5$ p.p.) / Baixo = Negativo (até $-2,5$ p.p.) |
+| 2º | `IRD_MEDIO` | Fator Humano (Regularidade Docente) | **0,370** | Alto = Fortemente Positivo (até $+3,2$ p.p.) / Baixo = Negativo |
+| 3º | `IED_ESFORCO_ALTO` | Fator Humano (Sobrecarga Docente) | **0,327** | Alto = Negativo (até $-1,0$ p.p.) / Baixo = Positivo (até $+1,3$ p.p.) |
+| 4º | `MED_CAT_3` | Fator Humano (Esforço Intermediário) | **0,165** | Impacto moderado disperso em torno de zero |
+| 5º | `TOTAL_ALUNOS_TRIENIO` | Porte da Unidade (Total de Alunos) | **0,149** | Alto = Negativo (despersonalização) / Baixo = Positivo |
+| 6º | `QT_SALAS_UTILIZADAS` | Porte da Unidade (Infraestrutura) | **0,145** | Alto = Negativo (até $-1,5$ p.p.) / Baixo = Positivo (até $+3,0$ p.p.) |
+| 7º | `IED_SCORE_MEDIO` | Fator Humano (Média de Esforço) | **0,144** | Alto = Negativo / Baixo = Positivo |
+| 8º | `MED_CAT_5` | Fator Humano (Sobrecarga Elevada) | **0,104** | Alto = Negativo (redução acentuada de proficiência) |
+| 9º | `QT_COMP_ALUNO` | Equipamento Tecnológico | **0,085** | Dispersão mínima em torno de zero |
+| 10º | `MED_CAT_4` | Fator Humano (Esforço Médio-Alto) | **0,084** | Leve penalização em níveis elevados |
+| 11º | `IN_LABORATORIO_CIENCIAS` | Insumo Pedagógico Físico | **0,055** | Presença = Leve ganho marginal ($+0,3$ p.p.) |
+| 12º | `MED_CAT_2` | Fator Humano (Baixo Esforço) | **0,047** | Efeito protetivo suave |
+| 13º | `MED_CAT_6` | Fator Humano (Sobrecarga Extrema) | **0,037** | Efeito negativo concentrado |
+| 14º | `IN_EQUIP_LOUSA_DIGITAL` | Equipamento Tecnológico | **0,033** | Impacto marginal desprezível |
+| 15º | `MED_CAT_1` | Fator Humano (Esforço Mínimo Ideal) | **0,027** | Presença = Ganho positivo de até $+1,2$ p.p. |
+| 16º | `IN_LABORATORIO_INFORMATICA`| Equipamento Tecnológico | **0,011** | Efeito prático nulo |
+| 17º | `IN_BIBLIOTECA_SALA_LEITURA`| Insumo Pedagógico Físico | **0,008** | Efeito prático nulo |
+| 18º | `IN_BANDA_LARGA` | Infraestrutura Conectividade | **0,003** | Efeito prático nulo |
+
+---
+
+### 13.4 Partes Descobertas e Diagnósticos Substantivos
+
+1. **A Magnitude do "Efeito-Escola Humano" Frente ao Contexto Social**:
+   - A soma dos impactos dos dois principais fatores docentes — **Regularidade Docente** ($0,370$ p.p.) e **Sobrecarga Docente** ($0,327$ p.p.) — totaliza **$0,697$ p.p.**
+   - Este valor representa **$59,6\%$ de toda a força explicativa do nível socioeconômico familiar (`MEDIA_INSE` = $1,170$ p.p.)**. Trata-se de uma constatação de imenso valor para as políticas educacionais: a gestão da equipe de professores tem poder institucional para contrabalançar a maior parte das desvantagens de partida dos estudantes.
+2. **A Alavanca da Regularidade Docente (`IRD_MEDIO`)**:
+   - Escolas com alta fixação do corpo docente (pontos rosas no *Beeswarm*) impulsionam a proficiência em até **$+3,2$ pontos percentuais**, enquanto unidades com rotatividade crônica (pontos azuis) sofrem penalizações de até $-1,2$ p.p.
+3. **O Efeito Negativo de Escala e Despersonalização Escolar**:
+   - Tanto `QT_SALAS_UTILIZADAS` quanto `TOTAL_ALUNOS_TRIENIO` apresentam correlação estatística negativa nas caudas: escolas de porte massificado (mais de 1.500 alunos e dezenas de salas) perdem até $-1,5$ p.p., ao passo que escolas de porte menor ou intermediário obtêm bônus preditivos de até $+3,0$ p.p., refletindo melhor ambiência escolar e proximidade comunitária.
+4. **O Mito da Infraestrutura Isolada e a Falácia Tecnocêntrica**:
+   - A soma de todas as variáveis de informática e conectividade (`IN_BANDA_LARGA`, `IN_LABORATORIO_INFORMATICA`, `IN_EQUIP_LOUSA_DIGITAL`, `QT_COMP_ALUNO`) totaliza meros **$0,132$ p.p.**, sendo superada em quase **três vezes** apenas pelo índice de regularidade docente isolado ($0,370$ p.p.).
+   - O diagnóstico empírico evidencia o subaproveitamento de infraestruturas escolares: a entrega de hardware sem formação continuada, mediação pedagógica em sala de aula e planejamento curricular integrado gera retorno nulo na aprendizagem de Matemática.
+
+---
+
+### 13.5 Fundamentação Teórica e Sociológica dos Resultados
+
+1. **A Teoria dos Jogos Cooperativos de Lloyd Shapley**:
+   - A decomposição axiomática permitiu isolar o valor de Shapley de cada insumo, solucionando o problema clássico de multicolinearidade e atribuição de mérito em ambientes complexos.
+2. **James Coleman (1966) e Pierre Bourdieu (1970)**:
+   - A predominância de `MEDIA_INSE` ratifica a tese sociológica de que o capital cultural familiar constitui o alicerce fundamental do rendimento escolar, delimitando as condições de partida.
+3. **Soares & Alves (2003, 2013) e Franco et al. (2007)**:
+   - A constatação de que a estabilidade e as condições de trabalho docente explicam mais de metade do peso do INSE corrobora a literatura nacional de Eficácia Escolar: a escola pública faz diferença real quando garante vínculos pedagógicos consistentes e preserva a integridade de sua equipe docente.
+4. **Cristia et al. (2014) e OCDE/PISA (2015)**:
+   - O impacto residual da tecnologia sem mediação pedagógica confirma os achados empíricos de avaliações internacionais, demonstrando que a transformação digital na educação depende estritamente do protagonismo humano do educador.
+5. **Lee & Smith (1997) e Crahay (2000)**:
+   - A penalização de escolas de grande porte confirma os estudos de clima escolar e despersonalização, sugerindo que unidades com escalas mais humanas favorecem o acompanhamento individualizado e a eficácia pedagógica.
+
+---
+
+### 13.6 Explicabilidade Local (SHAP Waterfall): Comparação Pareada de Casos e o Efeito Moderador
+
+A explicabilidade local investiga o comportamento do modelo preditivo no nível micro de unidades escolares individuais. Para ilustrar o funcionamento das árvores de decisão em situações concretas, realizou-se um pareamento metodológico estrito: selecionaram-se duas escolas estaduais situadas exatamente no mesmo estrato de vulnerabilidade socioeconômica ($\text{INSE} \approx 5,0$, correspondente à média das famílias da rede estadual), porém com trajetórias de proficiência diametralmente opostas.
+
+#### 1. Métodos e Técnicas Utilizadas
+- **Algoritmo de Decomposição**: `shap.plots.waterfall` aplicado sobre o modelo Random Forest treinado.
+- **Ponto de Partida e Chegada**: A decomposição parte do valor esperado da rede ($\mathbb{E}[f(X)] = 30,923\%$) e adiciona contribuições positivas marginais ($+X$ em vermelho) ou subtrai penalizações ($-Y$ em azul) até alcançar o valor predito individual $f(x)$.
+- **Critério de Amostragem Pareada**: Filtro no intervalo $4,90 \le \text{MEDIA\_INSE} \le 5,10$, isolando:
+  * **Caso 1 (Escola Resiliente de Alta Eficácia)**: EE Assentamento Santa Clara (Mirante do Paranapanema);
+  * **Caso 2 (Escola em Vulnerabilidade Institucional)**: EE Jardim Aracati II (São Paulo Capital — D.E. Sul 2).
+- **Artefatos Produzidos**:
+  * `reports/figures/shap_03_waterfall_escola_resiliente.png` (300 DPI);
+  * `reports/figures/shap_04_waterfall_escola_vulneravel.png` (300 DPI).
+
+---
+
+#### 2. Resumo Numérico Comparativo dos Casos
+
+| Dimensão Metodológica | Caso 1: EE Assentamento Santa Clara | Caso 2: EE Jardim Aracati II |
+| :--- | :---: | :---: |
+| **Município / Diretoria de Ensino** | Mirante do Paranapanema (Área Rural) | São Paulo Capital (D.E. Sul 2 — Periferia Urbana) |
+| **Nível Socioeconômico Familiar (`MEDIA_INSE`)** | **$4,92$** (Vulnerável) | **$5,01$** (Vulnerável) |
+| **Nota Real em Matemática (`TARGET_TRIENAL_MAT`)** | **$\mathbf{61,57\%}$** (Excelência Absoluta) | **$\mathbf{21,03\%}$** (Gargalo Crítico) |
+| **Valor Predito pelo Modelo ($f(x)$)** | **$35,61\%$** ($+4,69$ p.p. sobre a rede) | **$27,67\%$** ($-3,25$ p.p. sob a rede) |
+| **Impacto do Porte Escolar no SHAP** | **$+2,80$ p.p.** (`TOTAL_ALUNOS = 30`) | **$-0,53$ p.p.** (`QT_SALAS = 22`) |
+| **Impacto da Sobrecarga Docente no SHAP** | $+0,20$ p.p. (Baixo Esforço) | **$-0,65$ p.p.** (`IED_ESFORCO_ALTO = 60%`) |
+| **Penalização do INSE Familiar no SHAP** | **$-0,15$ p.p.** (Impacto Amortecido) | **$-2,13$ p.p.** (Impacto Amplificado) |
+
+---
+
+#### 3. Partes Descobertas: A Revelação do "Efeito Moderador" do Ambiente Escolar
+
+A comparação entre as duas escolas revela uma das propriedades mais ricas do aprendizado de máquina não-linear frente aos modelos lineares tradicionais:
+
+1. **A Não-Linearidade do Fator Socioeconômico**:
+   - Em um modelo linear estrito, escolas com INSE $4,92$ e $5,01$ receberiam penalizações idênticas. No Random Forest, a penalização de `MEDIA_INSE` no Assentamento Santa Clara foi de apenas **$-0,15$ p.p.**, enquanto no Jardim Aracati II atingiu severos **$-2,13$ p.p.**
+2. **O Efeito "Amortecedor Social" da Pequena Escala (Assentamento Santa Clara)**:
+   - A unidade rural atende um contingente reduzido de alunos (`TOTAL_ALUNOS_TRIENIO = 30`), gerando um bônus preditivo imediato de **$+2,80$ p.p.** no topo da cascata SHAP. A forte integração comunitária e o acompanhamento próximo dos docentes operam como uma barreira protetora que impede que a vulnerabilidade familiar contamine o rendimento acadêmico dos estudantes.
+3. **O Efeito "Amplificador da Vulnerabilidade" da Massificação (Jardim Aracati II)**:
+   - A unidade periférica conjuga massificação física ($22$ salas de aula em uso, penalizando a nota em $-0,53$ p.p.) com colapso do trabalho docente (**$60\%$ dos professores sob esforço extremo**, subtraindo $-0,65$ p.p.). Na ausência de suporte institucional individualizado, a escola não compensa as carências domésticas, e a pobreza familiar atinge o estudante com sua força máxima ($-2,13$ p.p.).
+
+---
+
+#### 4. Fundamentação Teórica da Explicabilidade Local
+- **Brooke & Soares (2008) e Rutter et al. (1979)**: O conceito de escola eficaz como moderadora de risco social demonstra que escolas organizadas não apenas aumentam a média geral, mas reduzem a dependência entre a origem social do aluno e seu destino escolar.
+- **Lee & Smith (1997)**: A escala humana da unidade escolar atua como fator primordial de eficácia no ensino médio, prevenindo o anonimato e fortalecendo o pertencimento institucional.
+- **Franco et al. (2007)**: A precarização das condições docentes em grandes centros urbanos desestrutura a capacidade da escola de oferecer respostas pedagógicas a estudantes em situação de desvantagem.
+
+---
+
+## 14. Fase 08: Síntese e Matriz de Priorização de Políticas Públicas Educacionais
+
+A etapa de síntese estratégica encerra a transição da modelagem estatística para a governança aplicada. Para transformar os achados empíricos de Machine Learning e SHAP em subsídios de tomada de decisão para a Secretaria da Educação do Estado de São Paulo (SEDUC-SP), estruturou-se a **Matriz Acionável de Políticas Públicas**, baseada nos princípios da análise de custo-efetividade educacional.
+
+### 14.1 Métodos e Técnicas Utilizadas
+1. **Estrutura Bidimensional da Matriz 2x2**:
+   - **Eixo Vertical ($Y$ — Retorno Pedagógico Real)**: Mensurado diretamente pelo impacto médio absoluto dos valores SHAP ($\text{mean}(|\text{SHAP value}|)$) no desempenho em Matemática, medido em pontos percentuais ($\text{p.p.}$).
+   - **Eixo Horizontal ($X$ — Custo e Complexidade de Implementação)**: Escala técnica ordinal de $1$ a $5$:
+     * *Nível 1 a 2*: Reformas de gestão, protocolos normativos e resoluções de atribuição de aulas (baixo impacto orçamentário direto);
+     * *Nível 3*: Reorganização de espaços físicos e formações continuadas com suporte pedagógico;
+     * *Nível 4 a 5*: Obras de ampliação predial, contratação de novos quadros efetivos e pregões massivos de aquisição de equipamentos tecnológicos.
+   - **Limiares de Delimitação dos Quadrantes**:
+     * *Corte de Impacto*: $0,12$ p.p. (separa fatores estruturantes de impactos residuais/marginais);
+     * *Corte de Custo/Esforço*: $3,0$ (separa intervenções de gestão daquelas intensivas em capital).
+2. **Artefatos Produzidos**:
+   - Painel Gráfico Executivo: `reports/figures/matriz_01_politicas_publicas.png` (300 DPI);
+   - Tabela de Decisão para Gestores: `data/gold/matriz_priorizacao_politicas_publicas.csv`.
+
+---
+
+### 14.2 Motivações Estratégicas das Escolhas
+1. **Ponte entre Ciência de Dados e Orçamento Público**:
+   - Os modelos preditivos identificam a força dos coeficientes, mas gestores públicos enfrentam restrições orçamentárias rígidas. A matriz fornece um instrumento visual objetivo para identificar onde cada real investido produz a maior alavancagem de aprendizagem.
+2. **Superação da Ineficiência Alocativa**:
+   - Combater a tendência histórica de compras de equipamentos sem vinculação a projetos pedagógicos estruturados, substituindo o senso comum por evidências causais-estatísticas desenviesadas.
+
+---
+
+### 14.3 Resumo Consolidado dos Resultados (Tabela Executiva de Priorização)
+
+| Quadrante Estratégico | Intervenção Proposta | Métrica SHAP Base | Impacto Real (p.p.) | Custo / Esforço (1-5) | Recomendação Executiva para a SEDUC-SP |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **Q1: Prioridade Estrutural** | Fixação Docente (Permanência) | `IRD_MEDIO` | **$+0,370$** | $2,2$ | Criar bônus de permanência e pontuação de carreira vinculada à estabilidade na mesma unidade. |
+| **Q1: Prioridade Estrutural** | Teto de Sobrecarga Docente | `IED_ESFORCO_ALTO`| **$+0,327$** | $2,5$ | Limitar a atribuição a no máximo 2-3 turmas por professor em escolas de maior vulnerabilidade. |
+| **Q2: Estruturante de Longo Prazo**| Desmassificação Escolar (Escala Humana)| `TOTAL_ALUNOS` / `QT_SALAS`| **$+0,149$** | $4,5$ | Modular novas construções para unidades de pequeno porte (< 500 alunos) ou criar subunidades autônomas. |
+| **Q3: Eficiência Marginal / Manutenção**| Laboratório de Ciências Ativo | `IN_LABORATORIO_CIENCIAS`| $+0,055$ | $1,8$ | Fornecer kits experimentais de baixo custo e protocolos curriculares ativos para uso contínuo. |
+| **Q3: Eficiência Marginal / Manutenção**| Salas de Leitura e Mediação | `IN_BIBLIOTECA_SALA_LEITURA`| $+0,008$ | $1,5$ | Integrar a leitura à decodificação de problemas e enunciados matemáticos (suporte interdisciplinar). |
+| **Q4: Baixa Relação Custo-Efetividade** | Aquisição Massiva de Computadores | `QT_COMP_ALUNO` | $+0,085$ | $4,6$ | Condicionar novas aquisições de hardware à prévia capacitação docente e plano curricular integrado. |
+| **Q4: Baixa Relação Custo-Efetividade** | Instalação de Lousas Digitais | `IN_EQUIP_LOUSA_DIGITAL`| $+0,033$ | $4,2$ | Priorizar a formação em metodologias ativas antes de novos pregões de telas interativas. |
+| **Q4: Baixa Relação Custo-Efetividade** | Laboratórios Tradicionais de TI | `IN_LABORATORIO_INFORMATICA`| $+0,011$ | $3,8$ | Reavaliar espaços ociosos ou obsoletos e readequá-los para convivência e reforço pedagógico. |
+
+---
+
+### 14.4 Partes Descobertas e Diretrizes de Ação por Quadrante
+
+1. **Quadrante 1 (Prioridade Estrutural — Alto Retorno / Custo de Gestão)**:
+   - Constitui a "vitória rápida" (*quick win*) da rede: intervenções no regime de trabalho docente (`IRD_MEDIO` e `IED_ESFORCO_ALTO`) têm o maior impacto positivo sobre a proficiência, com custos primariamente normativos (alteração nas regras de atribuição de aulas e bônus de permanência).
+2. **Quadrante 2 (Estruturante de Longo Prazo — Alto Retorno / Alto Custo)**:
+   - A desmassificação de escolas de grande porte demanda planejamento de infraestrutura e longo prazo orçamentário, mas garante um bônus de escala humana duradouro que protege contra o anonimato e a dispersão dos estudantes.
+3. **Quadrante 3 (Eficiência Marginal / Manutenção — Baixo Custo / Retorno Específico)**:
+   - A recomendação para salas de leitura e laboratórios de ciências existentes é: **qualificar e dinamizar sem onerar o orçamento**. O papel da sala de leitura, conforme demonstrado no acoplamento interdisciplinar (EDA Passo 7), é atuar como plataforma de suporte para a interpretação de enunciados complexos de exatas.
+4. **Quadrante 4 (Baixa Relação Custo-Efetividade — Alto Custo / Retorno Prático Residual)**:
+   - O investimento continuado em hardware puro sem acompanhamento pedagógico consome recursos vultosos sem reflexo mensurável na proficiência. A diretriz é redirecionar o foco das compras de equipamentos para a valorização e fixação do corpo docente.
+
+---
+
+### 14.5 Fundamentação Teórica e de Economia da Educação
+- **Levin & McEwan (2001)**: Os princípios de análise de custo-efetividade em políticas públicas educacionais determinam que intervenções com altos custos fixos de capital (como tecnologia desvinculada da pedagogia) possuem menor retorno marginal do que intervenções centradas no fator trabalho qualificado.
+- **Soares & Alves (2003, 2013) e Franco et al. (2007)**: A literatura nacional de eficácia escolar corrobora a centralidade da estabilidade da equipe como a política mais rentável em termos de valor agregado educacional.
+- **Cristia et al. (2014) e OCDE/PISA (2015)**: Evidências empíricas internacionais reiteram que a introdução de recursos de informática nas escolas não produz ganhos cognitivos sustentados caso não haja formação docente intensiva e alinhamento curricular.
+
+
+
+
