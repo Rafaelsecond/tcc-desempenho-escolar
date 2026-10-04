@@ -6,6 +6,7 @@
 **ADEMILSON ACOSTA CIRINO – RA: 24217736**  
 **EVERSON DOS SANTOS RODRIGUES – RA: 23223574**  
 **LUCAS SILVA DE AQUINO – RA: 2217680**  
+**MARCELO DOS SANTOS NOGUEROL – RA: 23202163**  
 **RAFAEL PEIXOTO DE CARVALHO – RA: 23211013**  
 **RODRIGO MATHEUS DE OLIVEIRA KOJIMA – RA: 23228077**  
 **TARIK RIBEIRO CONSTÂNCIO CAMPESTRINI – RA: 2203974**  
@@ -46,7 +47,7 @@ Relatório Técnico-Científico apresentado na disciplina de Trabalho de Conclus
 
 ### FICHA CATALOGRÁFICA / REFERÊNCIA DO TRABALHO
 
-CAMPESTRINI, T. R. C.; CIRINO, A. A.; AQUINO, L. S.; RODRIGUES, E. S.; KOJIMA, R. M. O.; CARVALHO, R. P. **Predição do desempenho em Matemática na Educação Básica a partir de indicadores educacionais e socioeconômicos: uma abordagem baseada em Ciência de Dados**. Relatório Técnico-Científico. Bacharelado em Ciência de Dados – Universidade Virtual do Estado de São Paulo. Orientador: Cássio Silva Takarada. São Paulo, 2026.
+CAMPESTRINI, T. R. C.; CIRINO, A. A.; AQUINO, L. S.; NOGUEROL, M. S.; RODRIGUES, E. S.; KOJIMA, R. M. O.; CARVALHO, R. P. **Predição do desempenho em Matemática na Educação Básica a partir de indicadores educacionais e socioeconômicos: uma abordagem baseada em Ciência de Dados**. Relatório Técnico-Científico. Bacharelado em Ciência de Dados – Universidade Virtual do Estado de São Paulo. Orientador: Cássio Silva Takarada. São Paulo, 2026.
 
 ---
 
@@ -191,7 +192,7 @@ The final stage of Brazilian Basic Education faces a historical and persistent c
    4.12. Modelagem Preditiva Supervisionada
    4.13. Interpretabilidade e Explicabilidade Algorítmica via SHAP
 
-5. DESENVOLVIMENTO E ANÁLISE EXPLORATÓRIA DOS DADOS [SEÇÃO VIVA]
+5. DESENVOLVIMENTO E ANÁLISE EXPLORATÓRIA DOS DADOS
    5.1. Estatísticas Descritivas e Perfilamento da Camada Gold
    5.2. Anatomia Estatística da Variável-Alvo (Y)
    5.3. O Teste Empírico da Hipótese de Coleman e a Reta de Determinação Socioeconômica
@@ -269,19 +270,39 @@ Entre esses fatores, ganham centralidade:
 
 ## 1.3. Relevância da Inteligência Artificial Explicável (XAI) na Gestão Pública
 
-A fundamentação técnica e acadêmica deste estudo assenta-se na mobilização de técnicas contemporâneas da Ciência de Dados para além da modelagem puramente preditiva. Modelos preditivos complexos baseados em aprendizado de máquina (como algoritmos de *ensemble learning* baseados em árvores de decisão) alcançam patamares superiores de acurácia em comparação com regressões paramétricas clássicas, todavia comportam-se como "caixas-pretas" (*black-boxes*), opacificando as relações funcionais subjacentes.
+A fundamentação técnica e acadêmica deste estudo assenta-se na mobilização de técnicas contemporâneas da Ciência de Dados para além da modelagem puramente preditiva. Modelos preditivos complexos baseados em aprendizado de máquina supervisionado — tais como algoritmos de *ensemble learning* baseados em árvores de decisão (FACELI et al., 2021; RUSSELL; NORVIG, 2022) — alcançam patamares superiores de acurácia em comparação com regressões paramétricas clássicas, todavia comportam-se frequentemente como "caixas-pretas" (*black-boxes*), opacificando as relações funcionais subjacentes.
 
 Para superar essa barreira epistêmica e viabilizar a aplicação dos resultados no setor público, incorpora-se o ferramental de **Inteligência Artificial Explicável (XAI)**, operacionalizado via valores SHAP (*SHapley Additive exPlanations*). Fundamentado na teoria dos jogos cooperativos, o método decompõe a contribuição marginal de cada atributo escolar na predição do desfecho de proficiência, preservando propriedades fundamentais de aditividade e consistência local. Essa abordagem permite quantificar não apenas a relevância global de cada fator, mas também desvelar não-linearidades e efeitos moderadores locais — avaliando, empiricamente, se e em que intensidade uma elevada estabilidade do corpo docente consegue exercer efeito protetivo em unidades escolares inseridas em contextos de severa vulnerabilidade socioeconômica.
 
 ## 1.4. Organização do Documento
 
-Para proporcionar leitura fluida e alinhada ao rigor metodológico exigido pela Universidade Virtual do Estado de São Paulo (UNIVESP), este relatório técnico-científico está estruturado em sete capítulos principais:
-- O **Capítulo 2 (Delimitação do Problema e Objetivos)** formaliza a questão norteadora, os limites temporais, espaciais e amostrais, as hipóteses estatísticas ($H_0, H_1, H_2$) e os objetivos geral e específicos.
-- O **Capítulo 3 (Materiais e Ambiente Computacional)** discrimina detalhadamente as bases de dados governamentais utilizadas, o enquadramento legal de transparência e privacidade (LAI e LGPD), os dicionários de variáveis e a especificação completa dos artefatos de dados e ferramentas tecnológicas.
-- O **Capítulo 4 (Metodologia e Engenharia de Dados)** apresenta o delineamento metodológico, a Arquitetura Medalhão, os funis amostrais de microdados (SARESP 2022 e Provão Paulista 2023–2024), a consolidação do target trienal ponderado ($Y$), a composição da Camada Gold ($N = 3.611$) com seus portões de qualidade (*quality gates*), os testes de estabilidade do ano-pivô 2023 e o protocolo de modelagem supervisionada e SHAP.
-- O **Capítulo 5 (Desenvolvimento e Análise Exploratória dos Dados)** compõe a seção viva do relatório, documentando a anatomia da variável-alvo, o teste empírico da tese de Coleman, o radar de correlações, o diagnóstico aprofundado dos fatores docentes (IED/IRD), a avaliação econométrica da infraestrutura e tecnologia, e o mapeamento sistemático e espacial das escolas resilientes.
-- O **Capítulo 6 (Resultados e Discussões)** sintetizará a performance preditiva dos modelos supervisionados, o ranqueamento de importância via SHAP e a verificação empírica das hipóteses formuladas.
-- O **Capítulo 7 (Considerações Finais e Proposta de Aplicação)** sintetiza as conclusões da pesquisa, apresenta a proposta de Matriz Diagnóstica para a gestão educacional, debate as limitações do estudo e sinaliza caminhos para trabalhos futuros.
+Em consonância com o rigor epistemológico e a transparência metodológica inerentes à pesquisa aplicada em Ciência de Dados, este relatório técnico-científico foi estruturado de modo a proporcionar uma narrativa analítica contínua e reprodutível, organizada em sete capítulos interdependentes:
+
+- O **Capítulo 1 (Introdução)** contextualiza o desafio histórico do ensino de Matemática na Educação Básica paulista, estabelece a relevância acadêmica e social do problema e fundamenta a necessidade da Inteligência Artificial Explicável (XAI) na gestão educacional.
+- O **Capítulo 2 (Delimitação do Problema e Objetivos)** formaliza a questão norteadora de pesquisa, demarca as fronteiras temporais, espaciais e amostrais do estudo, define as hipóteses estatísticas ($H_0$, $H_1$, $H_2$) e estabelece os objetivos geral e específicos.
+- O **Capítulo 3 (Materiais e Ambiente Computacional)** discrimina as bases de dados governamentais integradas (INEP e SEDUC-SP), detalha o enquadramento de conformidade com a LAI e a LGPD, apresenta os dicionários de variáveis e especifica a arquitetura tecnológica e os artefatos de software empregados.
+- O **Capítulo 4 (Metodologia e Engenharia de Dados)** descreve o fluxo ponta a ponta da Arquitetura Medalhão, os funis de depuração amostral, a construção da variável-alvo trienal ($Y$), a composição da Camada Gold ($N = 3.611$) com seus portões de qualidade (*quality gates*), a validação empírica da estabilidade do ano-pivô 2023 e o protocolo experimental de modelagem preditiva e explicabilidade SHAP.
+- O **Capítulo 5 (Desenvolvimento e Análise Exploratória dos Dados)** documenta a investigação empírica dos dados, contemplando a anatomia da variável-alvo, o teste econométrico da tese de Coleman, o radar de correlações lineares e monotônicas, o diagnóstico aprofundado dos fatores docentes (IED/IRD), a avaliação da infraestrutura física/digital, o mapeamento geográfico das escolas resilientes e o teste de acoplamento com Língua Portuguesa.
+- O **Capítulo 6 (Resultados e Discussões)** apresenta a avaliação empírica dos modelos preditivos sob validação cruzada 5-Fold (OLS, Ridge, Lasso, Random Forest e LightGBM), o saneamento do vazamento de ID cadastral, a decomposição global e local via valores SHAP (*TreeExplainer*), o pareamento de casos e a verificação conclusiva das hipóteses de pesquisa.
+- O **Capítulo 7 (Considerações Finais e Proposta de Aplicação)** sintetiza as principais contribuições do estudo, introduz a Matriz Diagnóstica Acionável de Custo-Efetividade voltada à tomada de decisão na SEDUC-SP, discute as limitações metodológicas do desenho de pesquisa e aponta diretrizes para investigações futuras.
+
+O percurso analítico e operacional do trabalho seguiu o planejamento quinzenal detalhado na **Tabela 1**:
+
+<br>
+
+*Tabela 1 – Cronograma Geral de Execução e Entregas Quinzenais do TCC*
+
+| Quinzena / Período | Etapa Metodológica | Principais Atividades e Entregas Desenvolvidas | Marco do Curso |
+| :---: | :--- | :--- | :---: |
+| **Q1** (10/08 a 23/08) | Concepção e Problematização | Escolha do tema, problematização da defasagem em Matemática e alinhamento preliminar da proposta com a orientação. | Planejamento Inicial |
+| **Q2** (24/08 a 06/09) | Delineamento Metodológico | Redação formal da introdução, justificativa, delimitação do campo, formulação das hipóteses e plano de trabalho. | **Entrega Parcial 1** |
+| **Q3** (07/09 a 20/09) | Ingestão e Arquitetura Medalhão | Coleta, limpeza e integração dos microdados brutos do SARESP, Censo Escolar e Indicadores do INEP (Bronze e Silver). | Pipeline de Dados |
+| **Q4** (21/09 a 04/10) | Engenharia de Features e EDA | Consolidação da Camada Gold ($N=3.611$), execução da análise exploratória, teste de Coleman e acoplamento interdisciplinar. | Análise Exploratória |
+| **Q5** (05/10 a 18/10) | Modelagem Preditiva e XAI | Treinamento sob 5-Fold CV (OLS, Lasso, RF, LightGBM), auditoria de vazamento de ID e explicabilidade global e local via SHAP. | **Entrega Parcial 2** |
+| **Q6** (19/10 a 01/11) | Síntese e Aplicação Prescritiva | Formulação da Matriz de Políticas Públicas (SEDUC-SP), veredito das hipóteses e redação das considerações finais. | Fechamento Analítico |
+| **Q7** (02/11 a 15/11) | Consolidação e Defesa | Normalização ABNT rigorosa, auditoria metodológica, gravação do vídeo de apresentação e postagem da versão definitiva. | **Entrega Final** |
+
+*Fonte: Elaborado pelos autores com base no plano de desenvolvimento do TCC (2026).*
 
 ---
 
@@ -370,7 +391,7 @@ As variáveis independentes ($X$) e dependentes ($Y$) foram estruturadas em grup
 | **Infraestrutura** | `IN_INTERNET_BANDA_LARGA` | `float64` | Indicador binário de presença de internet de alta velocidade na unidade. |
 | **Infraestrutura** | `IN_LABORATORIO_INFORMATICA`| `float64` | Indicador binário de presença de laboratório de informática escolar. |
 | **Infraestrutura** | `IN_LABORATORIO_CIENCIAS` | `float64` | Indicador binário de presença de laboratório de ciências da natureza. |
-| **Contexto Docente** | `MEDIA_IRD` | `float64` | Indicador de Regularidade do Corpo Docente no Ensino Médio (0.0 a 5.0). |
+| **Contexto Docente** | `IRD_MEDIO` | `float64` | Indicador de Regularidade do Corpo Docente no Ensino Médio (0.0 a 5.0). |
 | **Contexto Docente** | `IED_SCORE_MEDIO` | `float64` | Score médio ponderado de esforço docente no Ensino Médio (1.0 a 6.0). |
 | **Contexto Docente** | `IED_ESFORCO_ALTO` | `float64` | Percentual de docentes da escola enquadrados nos níveis 5 e 6 de sobrecarga. |
 | **Socioeconômico** | `MEDIA_INSE` | `float64` | Média contínua padronizada do nível socioeconômico da escola (Saeb). |
@@ -561,6 +582,21 @@ Uma das decisões metodológicas basilares deste estudo foi a seleção de **202
 
 A altíssima correlação linear de Pearson ($r > 0,70$ em todos os indicadores estruturais e docentes) valida cientificamente que as características das escolas no ano de 2023 representam com extrema fidelidade a realidade institucional do triênio avaliado, afastando riscos de viés temporal na modelagem preditiva.
 
+A **Figura 4** ilustra os diagramas de dispersão interanual conjugados para os indicadores docentes (`IRD_MEDIO` e `IED_SCORE_MEDIO`), confirmando a forte aderência dos estabelecimentos escolares à bissetriz de identidade perfeita ao longo do triênio:
+
+<br>
+
+<div align="center">
+
+![Figura 4 – Dispersão Interanual e Correlação de Pearson dos Indicadores Docentes (2022–2024)](figures/eda_00_estabilidade_docente_trienal.png)
+
+*Figura 4 – Dispersão Interanual e Correlação de Pearson dos Indicadores Docentes (2022–2024): Validação da Estabilidade Temporal do Ano-Pivô 2023.*  
+*Fonte: Elaborado pelos autores (2026).*
+
+</div>
+
+<br>
+
 ## 4.7. Processamento dos Microdados e Agregação do Desempenho Escolar
 
 O tratamento dos microdados discentes constituiu a etapa analítica mais densa do pipeline, processando mais de 3,8 milhões de registros brutos de avaliações para derivar métricas padronizadas no nível de cada unidade escolar.
@@ -637,16 +673,16 @@ Para prevenir vazamento de dados (*data leakage*) e assegurar generalização ro
 
 ## 4.12. Modelagem Preditiva Supervisionada
 
-Serão treinados e comparados três algoritmos de complexidades complementares:
+Foram treinados e comparados três algoritmos de complexidades complementares (FACELI et al., 2021; RUSSELL; NORVIG, 2022):
 1. **Regressão Ridge e Lasso (Lineares Regularizadas)**: Modelo de referência linear para captura de efeitos aditivos diretos;
 2. **Random Forest Regressor**: Algoritmo de *ensemble* baseado em ensacamento (*bagging*) de árvores de decisão, capaz de capturar relações não-lineares;
 3. **LightGBM Regressor**: Algoritmo de *gradient boosting* baseado em crescimento foliar (*leaf-wise*), altamente eficiente para dados tabulares com interações complexas.
 
-As métricas formais de avaliação adotadas serão o Coeficiente de Determinação ($R^2$), a Raiz do Erro Quadrático Médio (RMSE) e o Erro Médio Absoluto (MAE).
+As métricas formais de avaliação adotadas compreendem o Coeficiente de Determinação ($R^2$), a Raiz do Erro Quadrático Médio (RMSE) e o Erro Médio Absoluto (MAE).
 
 ## 4.13. Interpretabilidade e Explicabilidade Algorítmica via SHAP
 
-Para romper a opacidade do melhor modelo preditivo, será implementado o framework SHAP (*SHapley Additive exPlanations*):
+Para romper a opacidade do melhor modelo preditivo, implementou-se o arcabouço SHAP (*SHapley Additive exPlanations*):
 - **Importância Global (*SHAP Summary Plot*)**: Ranqueamento da magnitude absoluta média dos valores de Shapley ($E[|\phi_j|]$), contrastando a relevância dos fatores intraescolares em relação ao INSE;
 - **Interação Local (*SHAP Dependence Plot*)**: Análise detalhada da relação bidirecional entre o IRD e o INSE, identificando empiricamente os limiares em que a estabilidade do professor atenua o efeito adverso da desvantagem socioeconômica.
 
@@ -654,7 +690,7 @@ Para romper a opacidade do melhor modelo preditivo, será implementado o framewo
 
 <br>
 
-# 5. DESENVOLVIMENTO E ANÁLISE EXPLORATÓRIA DOS DADOS [SEÇÃO VIVA]
+# 5. DESENVOLVIMENTO E ANÁLISE EXPLORATÓRIA DOS DADOS
 
 A fase de Análise Exploratória de Dados (EDA) foi estruturada de forma modular e cientificamente orientada, confrontando as hipóteses sociológicas e educacionais formuladas nos Capítulos 1 e 2 com a evidência empírica da Camada Gold.
 
@@ -670,7 +706,7 @@ A consolidação da Camada Gold (`tcc_dataset_analitico_final.parquet`) estabele
 | **`TOTAL_ALUNOS_TRIENIO`** | Volume Amostral | **218,7** (±179,3) | **171,0** | 10,0 | 1.436,0 | **100,0%** |
 | **`MEDIA_INSE`** | Socioeconômico ($X$) | **5,25** (±0,23) | **5,24** | 4,26 | 6,00 | **99,5%** |
 | **`IED_SCORE_MEDIO`** | Esforço Docente ($X$) | **3,69** (±0,46) | **3,77** | 2,00 | 4,87 | **100,0%** |
-| **`MEDIA_IRD`** | Regularidade Docente ($X$)| **2,65** (±0,45) | **2,67** | 0,80 | 4,14 | **99,9%** |
+| **`IRD_MEDIO`** | Regularidade Docente ($X$)| **2,65** (±0,45) | **2,67** | 0,80 | 4,14 | **99,9%** |
 | **`QT_SALAS_UTILIZADAS`** | Infraestrutura ($X$) | **13,45** (±4,47) | **13,0** | 3,0 | 35,0 | **100,0%** |
 | **`QT_COMP_ALUNO`** | Tecnologia ($X$) | **69,52** (±49,48) | **62,0** | 0,0 | 476,0 | **100,0%** |
 
@@ -685,7 +721,7 @@ A consolidação da Camada Gold (`tcc_dataset_analitico_final.parquet`) estabele
 | `QT_SALAS_UTILIZADAS` | 3.611 | 3.611 | 0 | **100,0%** | Sem necessidade de imputação |
 | `QT_COMP_ALUNO` | 3.611 | 3.611 | 0 | **100,0%** | Sem necessidade de imputação |
 | `IED_SCORE_MEDIO` | 3.611 | 3.611 | 0 | **100,0%** | Sem necessidade de imputação |
-| `MEDIA_IRD` | 3.611 | 3.608 | 3 | **99,9%** | Imputação pela mediana regional |
+| `IRD_MEDIO` | 3.611 | 3.608 | 3 | **99,9%** | Imputação pela mediana regional |
 | `MEDIA_INSE` | 3.611 | 3.594 | 17 | **99,5%** | Imputação por KNN / Mediana de DE |
 | `IN_INTERNET_BANDA_LARGA` | 3.611 | 3.604 | 7 | **99,8%** | Imputação pela moda (1 - presente) |
 
@@ -771,7 +807,7 @@ Para mapear exaustivamente quais fatores escolares exercem maior atração sobre
 | **4º** | `MED_CAT_5` | **-0,2201** | **-0,2413** | $p < 0,001$ (***) | Docente: Sobrecarga Severa (>300 alunos) |
 | **5º** | `IED_SCORE_MEDIO` | **-0,2139** | **-0,2372** | $p < 0,001$ (***) | Docente: Score Ponderado de Esforço |
 | **6º** | `MED_CAT_3` | **+0,2113** | **+0,2140** | $p < 0,001$ (***) | Docente: Carga Equilibrada (1 a 2 escolas) |
-| **7º** | `MEDIA_IRD` | **+0,1734** | **+0,0949** | $p < 0,001$ (***) | Docente: Regularidade do Vínculo Escolar |
+| **7º** | `IRD_MEDIO` | **+0,1734** | **+0,0949** | $p < 0,001$ (***) | Docente: Regularidade do Vínculo Escolar |
 | **8º** | `MED_CAT_6` | **-0,1733** | **-0,2134** | $p < 0,001$ (***) | Docente: Sobrecarga Extrema (>400 alunos) |
 | **9º** | `DS_LATITUDE` | **+0,1500** | **+0,1274** | $p < 0,001$ (***) | Geográfico: Eixo Norte/Noroeste Paulista |
 | **10º** | `IN_LABORATORIO_CIENCIAS` | **+0,1124** | **+0,1159** | $p < 0,001$ (***) | Infraestrutura: Método Experimental |
@@ -802,7 +838,7 @@ O ordenamento visual completo das variáveis alavancas e gargalos é apresentado
 
 ## 5.5. O Fator Humano Intraescolar: Sobrecarga (IED) e Regularidade (IRD) Docente
 
-A constatação de que o bloco docente constitui a dimensão escolar de maior peso empírico motivou uma investigação aprofundada da interação entre a **sobrecarga de trabalho** (`IED_SCORE_MEDIO`) e a **estabilidade do vínculo escolar** (`MEDIA_IRD`), avaliadas sobre 3.591 unidades regulares ($99,4\%$ da base).
+A constatação de que o bloco docente constitui a dimensão escolar de maior peso empírico motivou uma investigação aprofundada da interação entre a **sobrecarga de trabalho** (`IED_SCORE_MEDIO`) e a **estabilidade do vínculo escolar** (`IRD_MEDIO`), avaliadas sobre 3.591 unidades regulares ($99,4\%$ da base).
 
 ### 5.5.1. A Matriz dos Quatro Quadrantes Docentes e o "Teto da Sobrecarga"
 Particionando as escolas estaduais pelas medianas da rede ($\text{IED} = 3,77$ e $\text{IRD} = 2,61$), estruturou-se uma matriz de quatro quadrantes que agrupa a rede em contingentes homogêneos de aproximadamente 900 escolas cada:
@@ -833,7 +869,7 @@ A dispersão bivariada com gradiente contínuo e o diagrama de caixas (*boxplot*
 
 ### 5.5.2. Modelagem Econométrica Controlada e o Gap Docente
 Para comprovar que o efeito docente não decorre de mero viés de alocação de professores em escolas de bairros mais ricos, ajustou-se uma regressão linear múltipla controlando pelo nível socioeconômico familiar:
-$$\text{TARGET\_TRIENAL\_MAT} = \beta_0 + (6,384 \cdot \text{MEDIA\_INSE}) - (1,475 \cdot \text{IED\_SCORE\_MEDIO}) + (1,269 \cdot \text{MEDIA\_IRD})$$
+$$\text{TARGET\_TRIENAL\_MAT} = \beta_0 + (6,384 \cdot \text{MEDIA\_INSE}) - (1,475 \cdot \text{IED\_SCORE\_MEDIO}) + (1,269 \cdot \text{IRD\_MEDIO})$$
 
 O poder explicativo do modelo saltou de $R^2 = 17,05\%$ (apenas INSE) para **$R^2 = 22,72\%$** (ganho líquido de $+5,67$ pontos percentuais). Constata-se que, para duas escolas com exatamente o mesmo perfil de renda familiar:
 - Cada ponto adicional de sobrecarga docente (IED) penaliza a nota escolar em **$-1,48$ p.p.**;
@@ -892,7 +928,7 @@ A comparação definitiva entre as dimensões escolares fundamenta-se no ajuste 
 | Modelo Econométrico | Variáveis Preditoras Incluídas | $R^2$ Ajustado | Ganho Marginal ($\Delta R^2$) | Força Relativa de Explicação |
 | :---: | :--- | :---: | :---: | :--- |
 | **Modelo 1** | Apenas Nível Socioeconômico (`MEDIA_INSE`) | **17,04%** | – | Base de Origem Social |
-| **Modelo 2** | INSE + Bloco Docente (`IED_SCORE_MEDIO` + `MEDIA_IRD`) | **22,72%** | **+5,68 p.p.** | **4,4 vezes superior à infraestrutura** |
+| **Modelo 2** | INSE + Bloco Docente (`IED_SCORE_MEDIO` + `IRD_MEDIO`) | **22,72%** | **+5,68 p.p.** | **4,4 vezes superior à infraestrutura** |
 | **Modelo 3** | INSE + Docentes + Infraestrutura Completa (Salas, PCs, Labs)| **24,01%** | **+1,29 p.p.** | Contribuição marginal residual |
 
 *Fonte: Elaborado pelos autores (2026).*
@@ -1532,7 +1568,7 @@ A base consolidada da Camada Gold (`tcc_dataset_analitico_final.parquet`) é com
 | 11 | `IN_INTERNET_BANDA_LARGA`| `float64` | $\{0, 1\}$ | Indicador de presença de internet de alta velocidade na unidade. |
 | 12 | `IN_LABORATORIO_INFORMATICA`| `float64` | $\{0, 1\}$ | Presença de laboratório de informática estruturado. |
 | 13 | `IN_LABORATORIO_CIENCIAS` | `float64` | $\{0, 1\}$ | Presença de laboratório de ciências da natureza. |
-| 14 | `MEDIA_IRD` | `float64` | $[0,0; 5,0]$ | Indicador de Regularidade do Corpo Docente no Ensino Médio (INEP). |
+| 14 | `IRD_MEDIO` | `float64` | $[0,0; 5,0]$ | Indicador de Regularidade do Corpo Docente no Ensino Médio (INEP). |
 | 15 | `IED_SCORE_MEDIO` | `float64` | $[1,0; 6,0]$ | Score médio ponderado de esforço docente no Ensino Médio (INEP). |
 | 16 | `IED_ESFORCO_ALTO` | `float64` | $[0,0\%; 100,0\%]$ | Percentual de docentes enquadrados nos níveis 5 e 6 de sobrecarga. |
 | 17 | `MEDIA_INSE` | `float64` | $[4,26; 6,00]$ | Média do nível socioeconômico escolar apurado pelo Saeb (INEP). |
