@@ -49,3 +49,9 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 .DS_Store
+
+# Governança local, relatórios finais e planejamento
+GEMINI.md
+reports/relatorio_final_tcc.md
+reports/planejamento/
+
