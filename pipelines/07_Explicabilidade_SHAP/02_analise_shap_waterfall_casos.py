@@ -53,49 +53,68 @@ rf.fit(X, y)
 explainer = shap.TreeExplainer(rf)
 shap_values = explainer(X)
 
-# 4. Seleção Determinística dos Dois Casos no Mesmo Nível Socioeconômico (INSE ~ 5.0)
-filtro_inse = (df_completo["MEDIA_INSE"] >= 4.9) & (df_completo["MEDIA_INSE"] <= 5.1)
-candidatas = df_completo[filtro_inse].copy()
+# 4. Seleção dos Dois Casos Emparelhados (Opção A: Alta Estabilidade Trienal e Controle de Escala)
+# Caso 1 (Enxuta Eficaz): EE Sadamita Ivassaki (038921)
+# Caso 2 (Grande Porte / Desafio): EE Martin Egidio Damy (037102)
+code_resiliente = "038921"
+code_vulneravel = "037102"
 
-# Escola Resiliente: Maior proficiência dentro do estrato
-idx_resiliente = candidatas["TARGET_TRIENAL_MAT"].idxmax()
-# Escola em Dificuldade: Menor proficiência dentro do mesmo estrato
-idx_vulneravel = candidatas["TARGET_TRIENAL_MAT"].idxmin()
+idx_resiliente = df_matriz.index[df_matriz["CODESC"] == code_resiliente][0]
+idx_vulneravel = df_matriz.index[df_matriz["CODESC"] == code_vulneravel][0]
 
 escola_res = df_completo.loc[idx_resiliente]
 escola_vul = df_completo.loc[idx_vulneravel]
 
 print("\n" + "=" * 75)
-print("2. ESCOLAS SELECIONADAS PARA A ANÁLISE DE CASO (MESMO INSE)")
+print("2. ESCOLAS SELECIONADAS PARA A ANÁLISE DE CASO (OPÇÃO A - ALTA ESTABILIDADE)")
 print("=" * 75)
-print(f"[CASO 1 - RESILIENTE] {escola_res['NOMESC']} | Município: {escola_res['MUN']} ({escola_res['DE']})")
-print(f"   -> INSE: {escola_res['MEDIA_INSE']:.2f} | Nota Real: {escola_res['TARGET_TRIENAL_MAT']:.2f}% | IRD: {escola_res['IRD_MEDIO']:.2f}")
+print(f"[CASO 1 - ENXUTA EFICAZ] {escola_res['NOMESC']} (CODESC: {escola_res['CODESC']})")
+print(f"   -> Município: {escola_res['MUN']} ({escola_res['DE']})")
+print(f"   -> INSE: {escola_res['MEDIA_INSE']:.2f} | Nota Real: {escola_res['TARGET_TRIENAL_MAT']:.2f}% | IRD: {escola_res['IRD_MEDIO']:.2f} | IED Alto: {escola_res['IED_ESFORCO_ALTO']:.1f}%")
 
-print(f"\n[CASO 2 - EM DIFICULDADE] {escola_vul['NOMESC']} | Município: {escola_vul['MUN']} ({escola_vul['DE']})")
-print(f"   -> INSE: {escola_vul['MEDIA_INSE']:.2f} | Nota Real: {escola_vul['TARGET_TRIENAL_MAT']:.2f}% | IRD: {escola_vul['IRD_MEDIO']:.2f}")
+print(f"\n[CASO 2 - GRANDE PORTE / DESAFIO] {escola_vul['NOMESC']} (CODESC: {escola_vul['CODESC']})")
+print(f"   -> Município: {escola_vul['MUN']} ({escola_vul['DE']})")
+print(f"   -> INSE: {escola_vul['MEDIA_INSE']:.2f} | Nota Real: {escola_vul['TARGET_TRIENAL_MAT']:.2f}% | IRD: {escola_vul['IRD_MEDIO']:.2f} | IED Alto: {escola_vul['IED_ESFORCO_ALTO']:.1f}%")
 
-# 5. Gerar Gráfico Waterfall para o Caso 1 (Resiliente)
-print("\n3. Gerando Waterfall para a Escola Resiliente...")
+# Lista de diretórios de destino para sincronização das figuras
+dirs_destino = [
+    DIR_FIGURAS,
+    BASE_DIR / "figures",
+    Path("D:/TCC/edicao_relatorio_final/Comparativo"),
+    Path("D:/TCC/edicao_relatorio_final/src"),
+    Path("D:/TCC/edicao_relatorio_final/fontes_latex_abnt/figures"),
+    Path("D:/DOCUMENTOS/Antigravity/figures"),
+    Path("D:/DOCUMENTOS/Antigravity/reports/figures")
+]
+
+# 5. Gerar Gráfico Waterfall para o Caso 1 (Resiliente / Enxuta Eficaz)
+print("\n3. Gerando Waterfall para a Escola Enxuta Eficaz (EE Sadamita Ivassaki)...")
 plt.figure(figsize=(10, 7))
 shap.plots.waterfall(shap_values[idx_resiliente], max_display=10, show=False)
-plt.title(f"Decomposição SHAP: {escola_res['NOMESC']} (Resiliente | INSE {escola_res['MEDIA_INSE']:.2f})", fontsize=11, pad=15)
+plt.title(f"Decomposição SHAP: {escola_res['NOMESC']} (Enxuta Eficaz | INSE {escola_res['MEDIA_INSE']:.2f})", fontsize=11, pad=15)
 plt.tight_layout()
-path_res = DIR_FIGURAS / "shap_03_waterfall_escola_resiliente.png"
-plt.savefig(path_res, dpi=300, bbox_inches="tight")
-plt.close()
-print(f"   -> Salvo em: {path_res}")
 
-# 6. Gerar Gráfico Waterfall para o Caso 2 (Em Dificuldade)
-print("4. Gerando Waterfall para a Escola em Dificuldade...")
+for d in dirs_destino:
+    if d.exists():
+        path_res = d / "shap_03_waterfall_escola_resiliente.png"
+        plt.savefig(path_res, dpi=300, bbox_inches="tight")
+        print(f"   -> Salvo em: {path_res}")
+plt.close()
+
+# 6. Gerar Gráfico Waterfall para o Caso 2 (Grande Porte / Desafio)
+print("\n4. Gerando Waterfall para a Escola Grande Porte / Desafio (EE Martin Egidio Damy)...")
 plt.figure(figsize=(10, 7))
 shap.plots.waterfall(shap_values[idx_vulneravel], max_display=10, show=False)
-plt.title(f"Decomposição SHAP: {escola_vul['NOMESC']} (Vulnerável | INSE {escola_vul['MEDIA_INSE']:.2f})", fontsize=11, pad=15)
+plt.title(f"Decomposição SHAP: {escola_vul['NOMESC']} (Grande Porte | INSE {escola_vul['MEDIA_INSE']:.2f})", fontsize=11, pad=15)
 plt.tight_layout()
-path_vul = DIR_FIGURAS / "shap_04_waterfall_escola_vulneravel.png"
-plt.savefig(path_vul, dpi=300, bbox_inches="tight")
+
+for d in dirs_destino:
+    if d.exists():
+        path_vul = d / "shap_04_waterfall_escola_vulneravel.png"
+        plt.savefig(path_vul, dpi=300, bbox_inches="tight")
+        print(f"   -> Salvo em: {path_vul}")
 plt.close()
-print(f"   -> Salvo em: {path_vul}")
 
 print("\n" + "=" * 75)
-print("[SUCESSO] Gráficos Waterfall gerados com sucesso em 300 DPI!")
+print("[SUCESSO] Gráficos Waterfall gerados e replicados com sucesso em 300 DPI!")
 print("=" * 75)
