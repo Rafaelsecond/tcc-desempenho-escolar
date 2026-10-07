@@ -647,9 +647,44 @@ Nesta seção são documentadas as etapas de modelagem preditiva aplicadas sobre
 5. **Fundamentação Teórica**:
    - Demonstração empírica da resiliência de modelos ensembles tipo *Bagging* frente à aleatoriedade intrínseca dos fenômenos humanos (Breiman, 2001; Hastie, Tibshirani & Friedman, 2009).
 
+### 12.5 Etapa 5 — Teste Econométrico de Moderação Estatística (Hipótese H2: Interação INSE x IRD)
+
+1. **Motivação e Rigor Conceitual**:
+   A hipótese secundária de pesquisa ($H_2$) postulava que a regularidade docente (IRD) atua como um fator moderador protetivo, amortecendo o impacto da vulnerabilidade socioeconômica (INSE). Para evitar o equívoco de inferir moderação estatística a partir de meras correlações simples ou estudos de caso pontuais, estimou-se um **modelo econométrico formal com termo de interação multiplicativo**, ancorado na metodologia clássica de moderação de Aiken & West (1991):
+
+   $$Y = \beta_0 + \beta_1 \text{INSE}_c + \beta_2 \text{IRD}_c + \beta_3 (\text{INSE}_c \times \text{IRD}_c) + \gamma X + \varepsilon$$
+
+   Onde as variáveis contínuas foram previamente centradas na média amostral ($\text{INSE}_c$ e $\text{IRD}_c$) para eliminar multicolinearidade artificial entre os termos principais e o produto de interação, viabilizando a interpretação direta de $\beta_1$ e $\beta_2$ no ponto médio da rede. O vetor $X$ incorpora todos os controles estruturais de esforço docente e infraestrutura escolar.
+
+2. **Resultados Econométricos da Regressão com Moderação (OLS)**:
+   A estimação por Mínimos Quadrados Ordinários ($N = 3.611$ escolas, $R^2 = 23,79\%$) gerou os seguintes parâmetros estatísticos:
+
+| Termo do Modelo | Coeficiente ($\beta$) | Erro Padrão (SE) | Estatística $t$ | $p$-valor | Significância | Intervalo de Confiança (95%) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Intercepto ($\beta_0$)** | $+30,9264$ | $0,0563$ | $+549,70$ | $< 0,0001$ | *** | $[+30,8161, +31,0367]$ |
+| **INSE centrado ($\beta_1$)** | $+6,2890$ | $0,2496$ | $+25,19$ | $< 0,0001$ | *** | $[+5,7996, +6,7784]$ |
+| **IRD centrado ($\beta_2$)** | $+1,2448$ | $0,1334$ | $+9,33$ | $< 0,0001$ | *** | $[+0,9832, +1,5064]$ |
+| **Interação $\text{INSE}_c \times \text{IRD}_c$ ($\beta_3$)** | **$+1,1727$** | **$0,5010$** | **$+2,34$** | **$0,0193$** | **\*** | **$[+0,1905, +2,1549]$** |
+| IED Score Médio | $-0,5285$ | $0,2153$ | $-2,45$ | $0,0141$ | * | $[-0,9507, -0,1064]$ |
+| IED Esforço Alto | $-0,0288$ | $0,0073$ | $-3,95$ | $< 0,0001$ | *** | $[-0,0431, -0,0145]$ |
+| Lab. Ciências | $+0,4255$ | $0,1351$ | $+3,15$ | $0,0017$ | ** | $[+0,1605, +0,6905]$ |
+| Salas Utilizadas | $-0,0897$ | $0,0144$ | $-6,23$ | $< 0,0001$ | *** | $[-0,1179, -0,0615]$ |
+
+3. **Partes Descobertas e Triangulação Teórica**:
+   * **Confirmação da Moderação Estatística ($\beta_3 \neq 0$):** O termo de interação é estatisticamente significante ao nível de $5\%$ ($p = 0,0193$), rejeitando-se formalmente a hipótese nula de que a relação entre INSE e desempenho é invariante ao nível de regularidade docente.
+   * **O Significado do Sinal Positivo ($\beta_3 > 0$) e o "Efeito Mateus":**  
+     Contrariando uma expectativa simplista de "amortecimento compensatório homogêneo" (que exigiria $\beta_3 < 0$), o coeficiente positivo revela uma dinâmica de **complementaridade institucional e vantagem cumulativa (*Efeito Mateus*, Merton, 1968; Bourdieu, 1970)**. A estabilidade docente beneficia todas as escolas da rede, mas seu retorno marginal é amplificado em contextos onde as famílias dispõem de maior capital cultural e socioeconômico:
+     - No **Quartil 1 (Mais Vulnerável):** O efeito marginal de cada ponto adicional de IRD é de **$+0,780$ p.p.** em Matemática ($r = +0,090$).
+     - No **Quartil 4 (Mais Favorecido):** O efeito marginal atinge **$+2,060$ p.p.** por ponto de IRD ($r = +0,275$).
+   * **Distinção Conceitual Obrigatória**:
+     - *Associação:* Confirmada inequivocamente ($\beta_2 = +1,24$, $p < 0,0001$).
+     - *Moderação Estatística:* Confirmada formalmente ($\beta_3 = +1,17$, $p = 0,0193$), indicando reforço de retorno.
+     - *Causalidade:* Não pode ser afirmada categoricamente, dada a natureza observacional e transversal dos dados censitários agregados.
+   * **Reenquadramento dos Casos de Estudo do SHAP:** Os gráficos Waterfall locais (EE Assentamento Santa Clara) deixam de ser rotulados como prova de amortecimento universal e passam a ser compreendidos como **estudos de caso de resiliência empírica positiva** — unidades atípicas que conseguem escapar da regra geral da rede por meio de liderança, clima escolar e coesão pedagógica excepcional. O artefato comprobatório foi salvo em `data/gold/teste_moderacao_inse_ird.csv`.
+
 ---
 
-### 12.5 Tabela Unificada de Benchmark e a Invariância Epistemológica dos Fatores
+### 12.6 Tabela Unificada de Benchmark e a Invariância Epistemológica dos Fatores
 
 | Posição | Modelo | Paradigma | $R^2$ Médio | RMSE (p.p.) | MAE (p.p.) | Situação |
 | :---: | :--- | :--- | :---: | :---: | :---: | :--- |
