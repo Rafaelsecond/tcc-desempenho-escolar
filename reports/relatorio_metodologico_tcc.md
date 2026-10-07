@@ -227,7 +227,28 @@ O confronto estatístico entre o Target Bruto original e o Target Padronizado de
 * **Correlação Linear de Pearson ($r$):** **$0,9086$** ($p < 0,0001$)
 * **Correlação de Ordenação de Spearman ($\rho$):** **$0,8859$** ($p < 0,0001$)
 
-**Conclusão de Robustez:** Com mais de 90% de alinhamento linear e de ranking preservados, confirma-se que a variância explicada entre as escolas reflete disparidades reais de eficácia escolar e contexto socioeconômico, e não ruídos de escala avaliativa. O artefato comprobatório encontra-se registrado em `data/gold/teste_sensibilidade_target_zscore.csv`.
+#### D. Distinção Epistemológica: Associação Estatística vs. Equivalência Psicométrica
+É imperativo registrar uma distinção conceitual rigorosa para a banca examinadora:
+* **O que o teste demonstra:** Os resultados agregados das escolas apresentam forte associação linear ($r \approx 0,91$) e de ranking ($\rho \approx 0,89$) entre as duas formas de operacionalização do alvo, indicando que a ordenação das escolas é altamente robusta à padronização de média e variância interanual.
+* **O que o teste NÃO demonstra:** Ele **não comprova** que 1 ponto percentual no SARESP 2022 equivale psicometricamente a 1 ponto percentual no Provão Paulista 2023/2024, nem que as três provas medem exatamente a mesma proficiência sob a mesma escala da Teoria de Resposta ao Item (TRI). A padronização por escores Z resolve a disparidade de médias e dispersões globais entre os anos letivos, mas não equaliza curvas características de itens (CCI), parâmetros de discriminação ($a$), dificuldade intrínseca ($b$) ou desvios de conteúdo cobrado.
+* **Decisão Metodológica:** Mantém-se o **Alvo Trienal Bruto Ponderado (`TARGET_TRIENAL_MAT`) como especificação principal** da pesquisa (preservando a interpretabilidade substantiva em pontos percentuais para a tomada de decisão pública), enquanto o **Alvo Padronizado por Z-Score é posicionado formalmente como Análise de Sensibilidade e Teste de Robustez Substantiva**.
+
+#### E. Teste de Sensibilidade Substantiva: Estabilidade do Modelo Campeão e da Hierarquia de Preditores
+Para além da correlação entre as variáveis-alvo, a verificação econométrica definitiva reside na pergunta: **as conclusões substantivas da pesquisa sobrevivem à mudança de escala?**
+Executou-se o pipeline `pipelines/06_Modelagem_Preditiva/05_teste_sensibilidade_alvos_rf.py`, replicando com rigor a validação cruzada 5-Fold (`random_state=42`) do modelo campeão (**Random Forest Regressor**, 200 árvores, `min_samples_leaf=5`) sob os dois alvos:
+
+| Verificação Metodológica | Alvo Bruto (Principal) | Alvo Padronizado Z (Sensibilidade) | Veredito de Robustez Substantiva |
+| :--- | :---: | :---: | :--- |
+| **$R^2$ do Melhor Modelo (CV Médio)** | **24,08%** ($\pm 0,89\%$) | **33,22%** ($\pm 1,25\%$) | **Sobrevive e se fortalece:** A remoção do ruído de dificuldade média interanual amplia o sinal estrutural capturado pelo modelo. |
+| **Erro Médio RMSE (CV Médio)** | 3,363 p.p. | 0,640 desvios | Proporcional à escala de mensuração de cada alvo. |
+| **Erro Médio MAE (CV Médio)** | 2,398 p.p. | 0,452 desvios | Erro absoluto médio bem comportado e estável em ambas as escalas. |
+| **Importância Relativa de INSE** | **32,64%** (1º lugar absoluto) | **35,61%** (1º lugar absoluto) | **Invariante:** O nível socioeconômico de origem familiar permanece como o maior preditor isolado do sistema educacional. |
+| **Importância de IRD (Gestão Docente)** | **11,97%** (2º lugar estrutural) | **12,97%** (2º lugar estrutural) | **Invariante:** A estabilidade do corpo docente consolida-se como a principal alavanca intraescolar sob controle direto da gestão. |
+| **Importância de IED Alto (Sobrecarga)** | **5,58%** | **8,62%** | **Preservada e amplificada:** A sobrecarga de turmas por docente ganha peso explicativo ainda maior na escala padronizada. |
+| **Hierarquia Top 4 Preditores** | $\text{INSE} \to \text{IRD} \to \text{Alunos} \to \text{IED}$ | $\text{INSE} \to \text{IRD} \to \text{Alunos} \to \text{IED}$ | **Perfeitamente Estável:** A hierarquia dimensional de importância de variáveis é 100% preservada. |
+
+> **Conclusão de Auditoria Substantiva:**  
+> A sensibilidade do modelo comprova que as descobertas empíricas do TCC — a primazia socioeconômica (Coleman/Bourdieu), a centralidade da regularidade docente (IRD) como amortecedor escolar e o papel penalizador da sobrecarga docente (IED) — **não dependem da métrica de escala adotada**, subsistindo como fatos estilizados robustos da rede estadual paulista. O artefato comprobatório encontra-se registrado em `data/gold/comparativo_sensibilidade_alvos_rf.csv`.
 
 ---
 

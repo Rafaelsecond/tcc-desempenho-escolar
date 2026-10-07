@@ -127,8 +127,9 @@ python pipelines/06_Modelagem_Preditiva/01_preparar_matriz_modelagem.py
 python pipelines/06_Modelagem_Preditiva/02_treinar_baselines_lineares.py
 python pipelines/06_Modelagem_Preditiva/03_treinar_random_forest.py
 python pipelines/06_Modelagem_Preditiva/04_treinar_gradient_boosting.py
+python pipelines/06_Modelagem_Preditiva/05_teste_sensibilidade_alvos_rf.py
 ```
-*Métricas geradas:* Tabela comparativa e arquivo `data/gold/metricas_random_forest.csv`.
+*Métricas geradas:* Tabela comparativa, arquivo `data/gold/metricas_random_forest.csv` e `data/gold/comparativo_sensibilidade_alvos_rf.csv`.
 
 ### Etapa 5: Explicabilidade por SHAP (Interpretabilidade Global e Local)
 ```powershell
