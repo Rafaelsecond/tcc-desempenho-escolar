@@ -361,22 +361,42 @@ Confrontaram-se todas as 26 variáveis preditoras ($X$) da Camada Gold com a var
 
 ---
 
-### 10.4 Auditoria Cirúrgica e Longitudinal das Escolas Resilientes
-Para testar a hipótese de que as escolas com maior superação da Reta de Coleman pudessem ser meras anomalias amostrais ou erros de mensuração de um único ano, executou-se uma auditoria histórica detalhada (2022–2024) sobre o Top 5 das escolas de maior resíduo positivo:
+### 10.4 Auditoria Longitudinal e Desmistificação Metodológica da Resiliência Escolar
 
-| Escola / Município | INSE | Nota Trienal ($Y$) | Previsto Coleman | Superação (Resíduo) | Alunos Triênio | SARESP 2022 | Provão 2023 | Provão 2024 | IED Médio | IRD Médio | Computadores |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **EE Assentamento Santa Clara** (Mirante do Paranapanema) | 4,92 | **61,57%** | 28,69% | **+32,88 p.p.** | 30 | 60,26% | 42,50% | 91,24% | 4,05 | 2,82 | 11 |
-| **EE Rizzieri Poletti** (Cândido Rodrigues) | 5,21 | **53,86%** | 30,66% | **+23,20 p.p.** | 49 | 55,73% | 33,57% | 59,27% | 4,14 | 2,69 | 78 |
-| **EE Maria de Lourdes G. Stefano** (Itápolis) | 4,99 | **49,95%** | 29,17% | **+20,78 p.p.** | 25 | 42,13% | 25,00% | 67,68% | 3,60 | 2,36 | 54 |
-| **EE Odila Bovolenta de Mendonça** (Adolfo) | 5,18 | **50,72%** | 30,46% | **+20,26 p.p.** | 68 | 60,18% | 23,57% | 55,35% | 4,09 | 2,84 | 27 |
-| **EE Terezinha Mariano Magnani** (Espírito Santo do Turvo) | 4,86 | **47,48%** | 28,28% | **+19,20 p.p.** | **111** | 58,78% | 22,43% | 59,40% | **2,40** | **3,26** | **0** |
+A literatura de Eficácia Escolar (*School Effectiveness Research*) convencionou definir como unidades resilientes aquelas cujo rendimento observado supera significativamente a predição socioeconômica da Reta de Coleman ($e_i = Y_i - \hat{Y}_{\text{Coleman}} > 0$). Para assegurar a integridade científica da pesquisa e evitar conclusões enganosas para o planejamento de políticas públicas, executou-se uma rigorosa auditoria metodológica sobre a distribuição dos resíduos.
 
-#### Conclusões Científicas da Auditoria:
-1. **Consistência Longitudinal Comprovada**: Todas as 5 escolas apresentaram desempenho excepcional tanto em 2022 quanto em 2024, confirmando que os resultados decorrem de uma **cultura pedagógica permanente** e não de ruído aleatório.
-2. **O "Efeito 2023" e a Validação da Média Trienal**: Em todas as unidades auditadas, observou-se uma queda pontual em 2023, ano de estreia do Provão Paulista (formato inédito aplicado pela Vunesp). O retorno a patamares elevados em 2024 comprova a adaptação institucional e legitima a opção metodológica por consolidar o desempenho escolar na **média ponderada pelo número de alunos do triênio**.
-3. **A Geografia do Capital Social Comunitário**: Todas as escolas resilientes situam-se em **municípios de pequeno porte do interior paulista**, onde turmas menores viabilizam acompanhamento pedagógico individualizado, controle de frequência e forte integração entre famílias e direção escolar.
-4. **O Caso Emblemático da EE Terezinha Mariano Magnani**: Com uma amostra robusta de 111 estudantes avaliados e INSE de baixa renda ($4,86$), a escola atingiu média de **47,48%** tendo **zero computadores para alunos**, mas ostentando o menor esforço docente da amostra ($\text{IED} = 2,40$, apenas 5% de sobrecarga alta) e a maior regularidade de vínculo ($\text{IRD} = 3,26$). É a confirmação empírica máxima de que **o fator humano e as condições estáveis de trabalho docente superam qualquer insumo tecnológico**.
+#### 1. A Armadilha Metodológica do Ranking Ingênuo (Variância de Pequenas Amostras)
+A extração inicial das cinco unidades de maior resíduo positivo bruto frente à Reta de Coleman sugeria aparentes "superações milagrosas" de até $+32,88$ pontos percentuais. Todavia, a auditoria dos microdados anuais revelou o clássico fenômeno do **Viés da Lei dos Pequenos Números** (TVERSKY; KAHNEMAN, 1971; KANE; STAIGER, 2002):
+
+| Escola / Município | INSE | Nota Real ($Y$) | Previsto Coleman | Resíduo Bruto | Alunos Triênio | 2022 (Alunos / Nota) | 2023 (Alunos / Nota) | 2024 (Alunos / Nota) | Oscilação Máxima ($\Delta$) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **EE Assentamento Santa Clara** (Mirante Paranap.) | 4,92 | **61,57%** | 28,69% | **$+32,88$ p.p.** | **30** | 13 ($60,3\%$) | 10 ($42,5\%$) | **7 ($91,2\%$)** | $+48,7$ p.p. |
+| **EE Rizzieri Poletti** (Cândido Rodrigues) | 5,21 | **53,86%** | 30,66% | **$+23,20$ p.p.** | **49** | 24 ($55,7\%$) | **7 ($33,6\%$)** | 18 ($59,3\%$) | $+25,7$ p.p. |
+| **EE Maria de Lourdes G. Stefano** (Itápolis) | 4,99 | **49,95%** | 29,17% | **$+20,78$ p.p.** | **25** | 9 ($42,1\%$) | **5 ($25,0\%$)** | 11 ($67,7\%$) | $+42,7$ p.p. |
+| **EE Odila Bovolenta de Mendonça** (Adolfo) | 5,18 | **50,72%** | 30,46% | **$+20,26$ p.p.** | **68** | 27 ($60,2\%$) | 14 ($23,6\%$) | 27 ($55,4\%$) | $-36,6$ p.p. |
+| **EE Terezinha Mariano Magnani** (Espírito Santo Turvo) | 4,86 | **47,48%** | 28,28% | **$+19,20$ p.p.** | **111** | 47 ($58,8\%$) | 35 ($22,4\%$) | 29 ($59,4\%$) | $-36,4$ p.p. |
+
+*Diagnóstico Crítico*: A variância amostral da média ($\sigma^2 / n$) infla desproporcionalmente as pontas dos rankings quando os grupos são diminutos. Turmas de 5 a 10 alunos geram oscilações de até $48$ p.p. entre edições. Tratar microclasses atípicas como modelos replicáveis de eficácia institucional constitui um equívoco de inferência, pois pequenas comunidades rurais não refletem a realidade das escolas urbanas que concentram a quase totalidade dos estudantes da rede.
+
+---
+
+#### 2. A Resiliência Real sob Controle de Escala Representativa ($\ge 250$ Alunos e $INSE \le 5,20$)
+Ao impor o critério de representatividade mínima ($\ge 250$ alunos avaliados no triênio e presença nas três edições) no estrato socioeconômico médio-baixo ou vulnerável ($INSE \le 5,20$), identificam-se **502 unidades escolares**. Nesse universo realista, o "milagre" dos $+32$ p.p. dissipa-se, revelando a verdadeira magnitude do efeito-escola viável em grandes estabelecimentos:
+
+| Posição | Escola / Município / Diretoria | INSE | Nota Real ($Y$) | Previsto Coleman | Resíduo de Coleman | Total Alunos Triênio | Alunos por Ano (2022 / 2023 / 2024) | Indicadores Docentes e Estruturais |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **1º** | **EE José Luiz de Siqueira** (Barrinha / Sertãozinho) | **5,04** | **37,16%** | 29,51% | **$+7,65$ p.p.** | **524** | 163 / 183 / 178 | IRD: 2,82 \| IED Alto: 19,0% \| Salas: 19 |
+| **2º** | **EE Eulália Malta** (Embu das Artes / Taboão da Serra) | **5,08** | **37,18%** | 29,78% | **$+7,40$ p.p.** | **304** | 122 / 81 / 101 | IRD: 2,29 \| **IED Alto: 0,0%** \| Salas: 13 |
+| **3º** | **EE Célia Ribeiro Landim** (São Paulo / Leste 2) | **5,14** | **36,89%** | 30,19% | **$+6,70$ p.p.** | **288** | 104 / 82 / 102 | IRD: 2,42 \| **IED Alto: 0,0%** \| Salas: 17 |
+| **4º** | **EE Walter Ribas de Andrade** (Cajamar / Caieiras) | **5,13** | **35,86%** | 30,12% | **$+5,74$ p.p.** | **288** | 115 / 78 / 95 | IRD: 3,30 \| **IED Alto: 0,0%** \| Salas: 15 |
+| **5º** | **EE Alberto Conte** (São Paulo / Sul 1) | **5,03** | **35,02%** | 29,44% | **$+5,58$ p.p.** | **1.088** | 449 / 232 / 407 | IRD: 3,09 \| IED Alto: 28,6% \| Salas: 22 |
+
+#### 3. Conclusões Epistemológicas para a Formulação de Políticas Públicas:
+1. **Magnitude Real da Superação Escolar**: Em ambientes massificados de periferia metropolitana e polos urbanos, a margem de superação viável proporcionada pela organização escolar situa-se entre **$+5$ e $+8$ pontos percentuais** sobre a média esperada pelo INSE, e não os $+30$ p.p. observados artificialmente em microamostras.
+2. **O Primado da Descompressão Docente**: Três das quatro escolas metropolitanas líderes (Eulália Malta, Célia Landim e Walter Ribas) registram **$0,0\%$ de docentes sob regime de esforço alto**. A proteção da equipe docente contra jornadas extenuantes e dispersão entre múltiplas escolas constitui o verdadeiro mecanismo institucional de proteção da aprendizagem em grande escala.
+3. **Cuidado com Sistemas de Avaliação e Bonificação**: Mecanismos de responsabilização educacional que não controlam o porte das escolas premiam aleatoriamente a variância estatística de turmas pequenas, gerando incentivos distorcidos e desconsiderando os desafios complexos de gestão de grandes estabelecimentos massificados.
+
+---
 
 ### 10.5 Passo 4 da EDA: O Fator Humano Intraescolar (Docentes: IED vs. IRD)
 O aprofundamento das duas forças intraescolares mais relevantes — o Esforço Docente (`IED`) e a Regularidade do Vínculo (`IRD`) — em $3.591$ escolas regulares ($99,4\%$ da base) revelou o mecanismo central de funcionamento da rede:
