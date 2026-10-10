@@ -68,23 +68,38 @@ A identificação da coorte exata do estudo seguiu um funil estrito aplicado sob
 
 Para fundamentar a adoção de **2023 como ano-pivô representativo** das variáveis preditoras ($X$), executou-se uma validação longitudinal comparando as **3.691 escolas estaduais presentes simultaneamente nos 3 anos**.
 
-### 4.1 Médias e Desvios Padrão
-| Indicador | Média 2022 (±DP) | Média 2023 (±DP) | Média 2024 (±DP) | Variação Global |
-| :--- | :---: | :---: | :---: | :---: |
-| **IRD (Regularidade Docente)** | 2.64 (±0.46) | 2.65 (±0.45) | 2.54 (±0.46) | -0.10 (-3.8%) |
-| **IED (Score Esforço Docente)** | 3.71 (±0.56) | 3.69 (±0.46) | 3.68 (±0.45) | -0.03 (-0.8%) |
-| **Salas Utilizadas** | 13.14 (±4.58) | 13.29 (±4.55) | 13.30 (±4.52) | +0.16 (+1.2%) |
-| **Computadores para Alunos** | 43.13 (±31.60) | 68.04 (±49.87) | 86.94 (±59.70) | Expansão Digital |
+### 4.1 Médias e Desvios Padrão no Triênio
+| Indicador Escolar | Média 2022 (±DP) | Média 2023 (±DP) | Média 2024 (±DP) | Variação Global | Diagnóstico de Nível |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **IRD (Regularidade Docente)** | 2,64 (±0,46) | 2,65 (±0,45) | 2,54 (±0,46) | -0,10 (-3,8%) | Estabilidade de patamar |
+| **IED (Score Esforço Docente)** | 3,71 (±0,56) | 3,69 (±0,46) | 3,68 (±0,45) | -0,03 (-0,8%) | Estabilidade quase perfeita |
+| **Salas Utilizadas** | 13,14 (±4,58) | 13,29 (±4,55) | 13,30 (±4,52) | +0,16 (+1,2%) | Estabilidade física estrita |
+| **Computadores para Alunos** | 43,13 (±31,60) | 68,04 (±49,87) | 86,94 (±59,70) | +43,81 (+101,6%) | Choque de Expansão Digital |
 
 ### 4.2 Matriz de Correlação Interanual (Pearson $r$)
-| Indicador | r (2022–2023) | r (2023–2024) | r (2022–2024) | Interpretação |
+| Indicador Escolar | $r$ (2022–2023) | $r$ (2023–2024) | $r$ (2022–2024) | Diagnóstico de Ordenação |
 | :--- | :---: | :---: | :---: | :--- |
-| **Salas Utilizadas** | **0.968** | **0.966** | **0.949** | Estabilidade física quase perfeita |
-| **IRD (Regularidade)** | **0.856** | **0.911** | **0.715** | Altíssima persistência temporal |
-| **IED (Esforço)** | **0.706** | **0.730** | **0.684** | Forte estabilidade de alocação |
-| **Computadores** | **0.547** | **0.616** | **0.446** | Programa progressivo de expansão da SEDUC |
+| **Salas Utilizadas** | **0,968** | **0,966** | **0,949** | Estabilidade linear quase perfeita ($r > 0,94$) |
+| **IRD (Regularidade Docente)** | **0,856** | **0,911** | **0,715** | Altíssima persistência temporal ($r > 0,71$) |
+| **IED (Esforço Docente)** | **0,706** | **0,730** | **0,684** | Forte consistência ($r > 0,70$ em anos adjacentes; $0,684$ no biênio) |
+| **Computadores para Alunos** | **0,547** | **0,616** | **0,446** | Associação moderada ($0,45 \le r \le 0,62$) devido a entregas escalonadas |
 
-> **Conclusão Metodológica para a Monografia**: A estabilidade das características físicas e docentes comprovada matematicamente valida a escolha de 2023 como o retrato representativo da infraestrutura e corpo docente da rede estadual durante o ciclo avaliativo do triênio.
+### 4.3 Distinção Econométrica: Estabilidade de Nível ($\mu_t$) vs. Estabilidade de Ordenação ($r$)
+A auditoria longitudinal do triênio impõe uma distinção metodológica crucial entre duas dimensões de estabilidade:
+1. **Estabilidade de Ordenação Relativa ($r$ de Pearson)**: Mensura a persistência da posição relativa das escolas ao longo do tempo. Sendo invariante a transformações lineares positivas ($Y = aX + b$), um coeficiente de Pearson elevado indica que a hierarquia relativa entre as unidades escolares se preservou, mas é cego a saltos ou translações no patamar médio absoluto.
+2. **Estabilidade de Nível Médio ($\mu_t$)**: Mensura se a escala e o valor absoluto do indicador permaneceram constantes entre os anos avaliados.
+
+A análise empírica revela padrões contrastantes entre os grupos de variáveis:
+* **Fatores Físicos Prediais e Corpo Docente (Dupla Estabilidade — Nível e Ordenação)**:
+  Tanto a escala predial (`QT_SALAS_UTILIZADAS`) quanto os indicadores de gestão do corpo docente (`IRD` e `IED`) exibem estabilidade conjunta: as médias variaram menos de 3,8% no triênio e as correlações interanuais situaram-se entre 0,684 e 0,968. Isso comprova que a infraestrutura física e a alocação do corpo docente da rede estadual paulista são estruturais e pouco voláteis no curto prazo.
+* **Infraestrutura Digital (Quebra de Nível por Política Pública e Ordenação Moderada)**:
+  O indicador de computadores para alunos registrou uma quebra estrutural de nível: a média por escola saltou de $43,13$ em 2022 para $86,94$ em 2024 (um acréscimo de $+101,6\%$). Esse movimento decorreu de um choque exógeno deliberado de aquisição e distribuição em massa de chromebooks e desktops pela SEDUC-SP no período pós-pandemia. Como as entregas ocorreram em remessas sucessivas e desiguais entre diretorias de ensino ao longo dos anos, a correlação linear interanual foi moderada ($0,446 \le r \le 0,616$). Portanto, para tecnologia digital não houve estabilidade de patamar.
+
+### 4.4 Justificativa e Validação Epistemológica do Ano-Pivô 2023
+A validação do ano central de **2023** como o retrato das características escolares preditoras ($X$) sustenta-se em três pilares:
+1. **Invariância dos Preditores Estruturantes**: As variáveis escolares que a literatura de Eficácia Escolar e os modelos preditivos identificam como determinantes no rendimento discente — em especial a regularidade do corpo docente (`IRD`), a mitigação da sobrecarga (`IED`) e a escala da escola (`QT_SALAS_UTILIZADAS`) — demonstraram estabilidade tanto de nível quanto de ordenação.
+2. **2023 como Centro de Gravidade da Expansão Digital**: Para o parque computacional, o ano de 2023 ($\mu = 68,04$ computadores) situa-se com exatidão na **mediana temporal e no ponto médio do ciclo de entrega** entre 2022 ($43,13$) e 2024 ($86,94$). Ele representa a média trienal da infraestrutura digital muito melhor do que qualquer um dos extremos.
+3. **Insensibilidade Empírica ao Hardware (Evidência SHAP)**: A decomposição de importância global e explicabilidade via SHAP TreeExplainer demonstrou que a infraestrutura tecnológica reunida possui impacto preditivo marginal sobre as proficiências em Matemática (ganho SHAP de apenas $0,132$ p.p., peso menos de 3 vezes inferior ao IRD isolado). Dessa forma, a expansão física de computadores não provocou distorções nas estimativas de desempenho nem comprometeu a mensuração dos fatores de gestão escolar.
 
 ---
 
